@@ -35,8 +35,9 @@ export default function BuilderScreen() {
     const [gifModalUrl, setGifModalUrl] = useState<string>("");
     const [loadingGif, setLoadingGif] = useState<string | null>(null);
 
-    // Load preloaded exercises from Archive (EDIT button)
+    // Load preloaded exercises from Archive (EDIT button) OR restore previous session
     useEffect(() => {
+        // First check for preload from Archive (higher priority)
         const preload = localStorage.getItem("builderPreload");
         if (preload) {
             try {
@@ -53,11 +54,35 @@ export default function BuilderScreen() {
                 setPreloadedFrom("archive");
                 // Clear the preload after loading
                 localStorage.removeItem("builderPreload");
+                return; // Exit early, preload takes precedence
+            } catch {
+                // Ignore if parsing fails
+            }
+        }
+
+        // Otherwise, restore any previously selected exercises (session persistence)
+        const savedExercises = localStorage.getItem("builderExercises");
+        if (savedExercises) {
+            try {
+                const parsed = JSON.parse(savedExercises);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setSelectedExercises(parsed);
+                }
             } catch {
                 // Ignore if parsing fails
             }
         }
     }, []);
+
+    // Persist selected exercises to localStorage whenever they change
+    useEffect(() => {
+        if (selectedExercises.length > 0) {
+            localStorage.setItem("builderExercises", JSON.stringify(selectedExercises));
+        } else {
+            // Clear storage when empty (user cleared all exercises)
+            localStorage.removeItem("builderExercises");
+        }
+    }, [selectedExercises]);
 
     const handleSelectExercise = (exercise: Exercise) => {
         // Prevent duplicates

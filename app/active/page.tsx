@@ -664,359 +664,362 @@ export default function ActiveScreen() {
                     );
                 })()}
 
-                {/* CURRENT_MOVE at x:24, y:120 */}
-                <span
-                    className="absolute"
-                    style={{
-                        left: 24,
-                        top: 120,
-                        fontFamily: "'Chakra Petch', sans-serif",
-                        fontSize: 10,
-                        color: "#888888",
-                        letterSpacing: 1,
-                    }}
-                >
-                    CURRENT_MOVE
-                </span>
-
-                {/* focusCard at x:24, y:140 */}
+                {/* Scrollable content container - starts below the header area */}
                 <div
-                    className="absolute"
-                    style={{
-                        left: 24,
-                        top: 140,
-                        width: 345,
-                        backgroundColor: "#111111",
-                        borderRadius: 4,
-                        padding: 24,
-                    }}
+                    className="absolute overflow-y-auto"
+                    style={{ left: 0, top: 110, width: "100%", height: "calc(100% - 110px)", paddingBottom: 24 }}
                 >
-                    {/* focusHead - BENCH PRESS + SET counter */}
-                    <div className="flex items-center justify-between" style={{ width: "100%", marginBottom: 24 }}>
-                        <div className="flex items-center" style={{ gap: 10 }}>
-                            {/* Superset Badge */}
-                            {supersetMode && exercises.length >= 2 && (() => {
-                                const pairIndex = Math.floor(currentIndex / 2);
-                                const pairLetter = String.fromCharCode(65 + pairIndex);
-                                const isOddSolo = exercises.length % 2 !== 0 && currentIndex === exercises.length - 1;
-                                if (isOddSolo) return null;
-                                return (
-                                    <div
+                    {/* CURRENT_MOVE label */}
+                    <span
+                        style={{
+                            marginLeft: 24,
+                            display: "block",
+                            fontFamily: "'Chakra Petch', sans-serif",
+                            fontSize: 10,
+                            color: "#888888",
+                            letterSpacing: 1,
+                        }}
+                    >
+                        CURRENT_MOVE
+                    </span>
+
+                    {/* focusCard - relative positioning for flow */}
+                    <div
+                        style={{
+                            margin: "10px 24px 0 24px",
+                            backgroundColor: "#111111",
+                            borderRadius: 4,
+                            padding: 24,
+                        }}
+                    >
+                        {/* focusHead - BENCH PRESS + SET counter */}
+                        <div className="flex items-center justify-between" style={{ width: "100%", marginBottom: 24 }}>
+                            <div className="flex items-center" style={{ gap: 10 }}>
+                                {/* Superset Badge */}
+                                {supersetMode && exercises.length >= 2 && (() => {
+                                    const pairIndex = Math.floor(currentIndex / 2);
+                                    const pairLetter = String.fromCharCode(65 + pairIndex);
+                                    const isOddSolo = exercises.length % 2 !== 0 && currentIndex === exercises.length - 1;
+                                    if (isOddSolo) return null;
+                                    return (
+                                        <div
+                                            style={{
+                                                padding: "4px 8px",
+                                                backgroundColor: "rgba(204, 255, 0, 0.15)",
+                                                border: "1px solid #CCFF00",
+                                                borderRadius: 4,
+                                            }}
+                                        >
+                                            <span
+                                                style={{
+                                                    fontFamily: "'Rubik Mono One', monospace",
+                                                    fontSize: 14,
+                                                    color: "#CCFF00",
+                                                }}
+                                            >
+                                                {pairLetter}{currentIndex % 2 + 1}
+                                            </span>
+                                        </div>
+                                    );
+                                })()}
+                                <span
+                                    style={{
+                                        fontFamily: "'Rubik Mono One', monospace",
+                                        fontSize: 24,
+                                        color: "#FFFFFF",
+                                    }}
+                                >
+                                    {activeExercise.name}
+                                </span>
+                            </div>
+                            <span
+                                style={{
+                                    fontFamily: "'Chakra Petch', sans-serif",
+                                    fontSize: 12,
+                                    color: "#CCFF00",
+                                }}
+                            >
+                                SET {currentSet}/{activeExercise.sets}
+                            </span>
+                        </div>
+
+                        {/* Input Row */}
+                        <div className="flex" style={{ gap: 16, marginBottom: 24 }}>
+                            {/* Weight Input */}
+                            <div
+                                className="flex flex-col items-center justify-center"
+                                style={{
+                                    flex: 1,
+                                    height: 80,
+                                    backgroundColor: "#0A0A0A",
+                                    borderRadius: 4,
+                                }}
+                            >
+                                <input
+                                    type="text"
+                                    value={weight}
+                                    onChange={(e) => setWeight(e.target.value)}
+                                    style={{
+                                        width: "100%",
+                                        background: "transparent",
+                                        border: "none",
+                                        outline: "none",
+                                        textAlign: "center",
+                                        fontFamily: "'Rubik Mono One', monospace",
+                                        fontSize: 32,
+                                        color: "#FFFFFF",
+                                    }}
+                                />
+                                <span
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 10,
+                                        color: "#555555",
+                                    }}
+                                >
+                                    KG
+                                </span>
+                            </div>
+                            {/* Reps Input */}
+                            <div
+                                className="flex flex-col items-center justify-center"
+                                style={{
+                                    flex: 1,
+                                    height: 80,
+                                    backgroundColor: "#0A0A0A",
+                                    borderRadius: 4,
+                                }}
+                            >
+                                <input
+                                    type="text"
+                                    value={reps}
+                                    onChange={(e) => setReps(e.target.value)}
+                                    style={{
+                                        width: "100%",
+                                        background: "transparent",
+                                        border: "none",
+                                        outline: "none",
+                                        textAlign: "center",
+                                        fontFamily: "'Rubik Mono One', monospace",
+                                        fontSize: 32,
+                                        color: "#CCFF00",
+                                    }}
+                                />
+                                <span
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 10,
+                                        color: "#555555",
+                                    }}
+                                >
+                                    REPS
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* LOG SET Button */}
+                        <motion.div
+                            whileHover={{ scale: 1.02, boxShadow: "0 0 15px rgba(204, 255, 0, 0.4)" }}
+                            whileTap={{ scale: 0.98 }}
+                            className="flex items-center justify-center cursor-pointer"
+                            style={{
+                                width: "100%",
+                                height: 60,
+                                backgroundColor: "#CCFF00",
+                                borderRadius: 4,
+                            }}
+                            onClick={handleLogSet}
+                        >
+                            <span
+                                style={{
+                                    fontFamily: "'Rubik Mono One', monospace",
+                                    fontSize: 18,
+                                    color: "#000000",
+                                }}
+                            >
+                                LOG SET ▶
+                            </span>
+                        </motion.div>
+                    </div>
+
+                    {/* histContext - now inside focusCard for proper flow */}
+                    {(() => {
+                        const lastTimeData = getLastTimeData(activeExercise.name);
+                        const currentWeight = parseInt(weight) || 0;
+                        const lastWeight = lastTimeData ? parseInt(lastTimeData.weight) || 0 : 0;
+                        const progressDiff = lastTimeData ? currentWeight - lastWeight : 0;
+                        const hasHistory = !!lastTimeData;
+
+                        return (
+                            <div
+                                className="flex items-center justify-between"
+                                style={{ marginTop: 16, width: "100%", paddingLeft: 24, paddingRight: 24 }}
+                            >
+                                <div>
+                                    <span
                                         style={{
-                                            padding: "4px 8px",
-                                            backgroundColor: "rgba(204, 255, 0, 0.15)",
-                                            border: "1px solid #CCFF00",
-                                            borderRadius: 4,
+                                            fontFamily: "'Chakra Petch', sans-serif",
+                                            fontSize: 12,
+                                            color: "#888888",
+                                            display: "block",
                                         }}
                                     >
+                                        {hasHistory
+                                            ? `LAST_TIME: ${lastTimeData.weight}KG x ${lastTimeData.reps}`
+                                            : "LAST_TIME: FIRST_SESSION"}
+                                    </span>
+                                    <span
+                                        style={{
+                                            fontFamily: "'Chakra Petch', sans-serif",
+                                            fontSize: 10,
+                                            color: "#555555",
+                                            display: "block",
+                                            marginTop: 4,
+                                        }}
+                                    >
+                                        {hasHistory ? "// PREVIOUS_REF" : "// NO_HISTORY"}
+                                    </span>
+                                </div>
+                                {hasHistory && progressDiff !== 0 && (
+                                    <div className="flex items-center" style={{ gap: 8 }}>
                                         <span
                                             style={{
                                                 fontFamily: "'Rubik Mono One', monospace",
                                                 fontSize: 14,
-                                                color: "#CCFF00",
+                                                color: progressDiff > 0 ? "#CCFF00" : progressDiff < 0 ? "#FF6B6B" : "#888888",
                                             }}
                                         >
-                                            {pairLetter}{currentIndex % 2 + 1}
+                                            {progressDiff > 0 ? `+${progressDiff}` : progressDiff}KG
+                                        </span>
+                                        <span
+                                            style={{
+                                                fontFamily: "'Chakra Petch', sans-serif",
+                                                fontSize: 8,
+                                                color: progressDiff > 0 ? "#CCFF00" : progressDiff < 0 ? "#FF6B6B" : "#888888",
+                                                opacity: 0.7,
+                                            }}
+                                        >
+                                            {progressDiff > 0 ? "↑ PROGRESS" : progressDiff < 0 ? "↓ LIGHTER" : "SAME"}
                                         </span>
                                     </div>
-                                );
-                            })()}
-                            <span
-                                style={{
-                                    fontFamily: "'Rubik Mono One', monospace",
-                                    fontSize: 24,
-                                    color: "#FFFFFF",
-                                }}
-                            >
-                                {activeExercise.name}
-                            </span>
-                        </div>
-                        <span
-                            style={{
-                                fontFamily: "'Chakra Petch', sans-serif",
-                                fontSize: 12,
-                                color: "#CCFF00",
-                            }}
-                        >
-                            SET {currentSet}/{activeExercise.sets}
-                        </span>
-                    </div>
-
-                    {/* Input Row */}
-                    <div className="flex" style={{ gap: 16, marginBottom: 24 }}>
-                        {/* Weight Input */}
-                        <div
-                            className="flex flex-col items-center justify-center"
-                            style={{
-                                flex: 1,
-                                height: 80,
-                                backgroundColor: "#0A0A0A",
-                                borderRadius: 4,
-                            }}
-                        >
-                            <input
-                                type="text"
-                                value={weight}
-                                onChange={(e) => setWeight(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    background: "transparent",
-                                    border: "none",
-                                    outline: "none",
-                                    textAlign: "center",
-                                    fontFamily: "'Rubik Mono One', monospace",
-                                    fontSize: 32,
-                                    color: "#FFFFFF",
-                                }}
-                            />
-                            <span
-                                style={{
-                                    fontFamily: "'Chakra Petch', sans-serif",
-                                    fontSize: 10,
-                                    color: "#555555",
-                                }}
-                            >
-                                KG
-                            </span>
-                        </div>
-                        {/* Reps Input */}
-                        <div
-                            className="flex flex-col items-center justify-center"
-                            style={{
-                                flex: 1,
-                                height: 80,
-                                backgroundColor: "#0A0A0A",
-                                borderRadius: 4,
-                            }}
-                        >
-                            <input
-                                type="text"
-                                value={reps}
-                                onChange={(e) => setReps(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    background: "transparent",
-                                    border: "none",
-                                    outline: "none",
-                                    textAlign: "center",
-                                    fontFamily: "'Rubik Mono One', monospace",
-                                    fontSize: 32,
-                                    color: "#CCFF00",
-                                }}
-                            />
-                            <span
-                                style={{
-                                    fontFamily: "'Chakra Petch', sans-serif",
-                                    fontSize: 10,
-                                    color: "#555555",
-                                }}
-                            >
-                                REPS
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* LOG SET Button */}
-                    <motion.div
-                        whileHover={{ scale: 1.02, boxShadow: "0 0 15px rgba(204, 255, 0, 0.4)" }}
-                        whileTap={{ scale: 0.98 }}
-                        className="flex items-center justify-center cursor-pointer"
-                        style={{
-                            width: "100%",
-                            height: 60,
-                            backgroundColor: "#CCFF00",
-                            borderRadius: 4,
-                        }}
-                        onClick={handleLogSet}
-                    >
-                        <span
-                            style={{
-                                fontFamily: "'Rubik Mono One', monospace",
-                                fontSize: 18,
-                                color: "#000000",
-                            }}
-                        >
-                            LOG SET ▶
-                        </span>
-                    </motion.div>
-                </div>
-
-                {/* histContext at x:24, y:440 - Dynamic data from workout history */}
-                {(() => {
-                    const lastTimeData = getLastTimeData(activeExercise.name);
-                    const currentWeight = parseInt(weight) || 0;
-                    const lastWeight = lastTimeData ? parseInt(lastTimeData.weight) || 0 : 0;
-                    const progressDiff = lastTimeData ? currentWeight - lastWeight : 0;
-                    const hasHistory = !!lastTimeData;
-
-                    return (
-                        <div
-                            className="absolute flex items-center justify-between"
-                            style={{ left: 24, top: 440, width: 345 }}
-                        >
-                            <div>
-                                <span
-                                    style={{
-                                        fontFamily: "'Chakra Petch', sans-serif",
-                                        fontSize: 12,
-                                        color: "#888888",
-                                        display: "block",
-                                    }}
-                                >
-                                    {hasHistory
-                                        ? `LAST_TIME: ${lastTimeData.weight}KG x ${lastTimeData.reps}`
-                                        : "LAST_TIME: FIRST_SESSION"}
-                                </span>
-                                <span
-                                    style={{
-                                        fontFamily: "'Chakra Petch', sans-serif",
-                                        fontSize: 10,
-                                        color: "#555555",
-                                        display: "block",
-                                        marginTop: 4,
-                                    }}
-                                >
-                                    {hasHistory ? "// PREVIOUS_REF" : "// NO_HISTORY"}
-                                </span>
+                                )}
+                                {hasHistory && progressDiff === 0 && (
+                                    <div className="flex items-center" style={{ gap: 8 }}>
+                                        <span
+                                            style={{
+                                                fontFamily: "'Rubik Mono One', monospace",
+                                                fontSize: 14,
+                                                color: "#888888",
+                                            }}
+                                        >
+                                            =
+                                        </span>
+                                        <span
+                                            style={{
+                                                fontFamily: "'Chakra Petch', sans-serif",
+                                                fontSize: 8,
+                                                color: "#888888",
+                                                opacity: 0.7,
+                                            }}
+                                        >
+                                            SAME_WEIGHT
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                            {hasHistory && progressDiff !== 0 && (
-                                <div className="flex items-center" style={{ gap: 8 }}>
-                                    <span
-                                        style={{
-                                            fontFamily: "'Rubik Mono One', monospace",
-                                            fontSize: 14,
-                                            color: progressDiff > 0 ? "#CCFF00" : progressDiff < 0 ? "#FF6B6B" : "#888888",
-                                        }}
-                                    >
-                                        {progressDiff > 0 ? `+${progressDiff}` : progressDiff}KG
-                                    </span>
-                                    <span
-                                        style={{
-                                            fontFamily: "'Chakra Petch', sans-serif",
-                                            fontSize: 8,
-                                            color: progressDiff > 0 ? "#CCFF00" : progressDiff < 0 ? "#FF6B6B" : "#888888",
-                                            opacity: 0.7,
-                                        }}
-                                    >
-                                        {progressDiff > 0 ? "↑ PROGRESS" : progressDiff < 0 ? "↓ LIGHTER" : "SAME"}
-                                    </span>
-                                </div>
-                            )}
-                            {hasHistory && progressDiff === 0 && (
-                                <div className="flex items-center" style={{ gap: 8 }}>
-                                    <span
-                                        style={{
-                                            fontFamily: "'Rubik Mono One', monospace",
-                                            fontSize: 14,
-                                            color: "#888888",
-                                        }}
-                                    >
-                                        =
-                                    </span>
-                                    <span
-                                        style={{
-                                            fontFamily: "'Chakra Petch', sans-serif",
-                                            fontSize: 8,
-                                            color: "#888888",
-                                            opacity: 0.7,
-                                        }}
-                                    >
-                                        SAME_WEIGHT
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-                    );
-                })()}
+                        );
+                    })()}
 
-                {/* UP_NEXT at x:24, y:490 */}
-                <span
-                    className="absolute"
-                    style={{
-                        left: 24,
-                        top: 490,
-                        fontFamily: "'Chakra Petch', sans-serif",
-                        fontSize: 10,
-                        color: "#888888",
-                        letterSpacing: 1,
-                    }}
-                >
-                    UP_NEXT
-                </span>
-
-                {/* queueList at x:24, y:520 */}
-                <div
-                    className="absolute"
-                    style={{ left: 24, top: 520, width: 345 }}
-                >
-                    {queue.map((ex, i) => (
-                        <div
-                            key={ex.id}
-                            className="flex items-center justify-between"
-                            style={{
-                                width: "100%",
-                                height: 56,
-                                backgroundColor: "transparent",
-                                borderBottom: "1px solid #333333",
-                                padding: 16,
-                            }}
-                        >
-                            <span
-                                style={{
-                                    fontFamily: "'Chakra Petch', sans-serif",
-                                    fontSize: 14,
-                                    color: i === 0 ? "#FFFFFF" : "#555555",
-                                }}
-                            >
-                                {ex.name}
-                            </span>
-                            <div className="flex items-center" style={{ gap: 16 }}>
-                                <span
-                                    style={{
-                                        fontFamily: "'Chakra Petch', sans-serif",
-                                        fontSize: 10,
-                                        color: "#555555",
-                                    }}
-                                >
-                                    {ex.sets} SETS
-                                </span>
-                                <motion.span
-                                    whileHover={{ scale: 1.1, color: "#FFFFFF" }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="cursor-pointer"
-                                    style={{
-                                        fontFamily: "'Rubik Mono One', monospace",
-                                        fontSize: 10,
-                                        color: "#CCFF00",
-                                    }}
-                                    onClick={() => handleSurf(i)}
-                                >
-                                    SURF ⇪
-                                </motion.span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* finishLink - moved up to avoid nav collision */}
-                <Link href="/lab">
-                    <motion.span
-                        whileHover={{ color: "#FFFFFF" }}
-                        whileTap={{ scale: 0.98 }}
-                        className="absolute cursor-pointer"
+                    {/* UP_NEXT - relative positioning for flow */}
+                    <span
                         style={{
-                            left: 24,
-                            top: 750,
+                            marginTop: 24,
+                            marginLeft: 24,
+                            display: "block",
                             fontFamily: "'Chakra Petch', sans-serif",
-                            fontSize: 12,
-                            color: "#FF4444",
+                            fontSize: 10,
+                            color: "#888888",
                             letterSpacing: 1,
                         }}
                     >
+                        UP_NEXT
+                    </span>
+
+                    {/* queueList - relative positioning for flow */}
+                    <div
+                        style={{ marginLeft: 24, marginTop: 8, width: "calc(100% - 48px)" }}
+                    >
+                        {queue.map((ex, i) => (
+                            <div
+                                key={ex.id}
+                                className="flex items-center justify-between"
+                                style={{
+                                    width: "100%",
+                                    height: 56,
+                                    backgroundColor: "transparent",
+                                    borderBottom: "1px solid #333333",
+                                    padding: 16,
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 14,
+                                        color: i === 0 ? "#FFFFFF" : "#555555",
+                                    }}
+                                >
+                                    {ex.name}
+                                </span>
+                                <div className="flex items-center" style={{ gap: 16 }}>
+                                    <span
+                                        style={{
+                                            fontFamily: "'Chakra Petch', sans-serif",
+                                            fontSize: 10,
+                                            color: "#555555",
+                                        }}
+                                    >
+                                        {ex.sets} SETS
+                                    </span>
+                                    <motion.span
+                                        whileHover={{ scale: 1.1, color: "#FFFFFF" }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="cursor-pointer"
+                                        style={{
+                                            fontFamily: "'Rubik Mono One', monospace",
+                                            fontSize: 10,
+                                            color: "#CCFF00",
+                                        }}
+                                        onClick={() => handleSurf(i)}
+                                    >
+                                        SURF ⇪
+                                    </motion.span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* finishLink - relative positioning for flow */}
+                    <Link href="/lab">
+                        <motion.span
+                            whileHover={{ color: "#FFFFFF" }}
+                            whileTap={{ scale: 0.98 }}
+                            className="cursor-pointer"
+                            style={{
+                                marginLeft: 24,
+                                marginTop: 32,
+                                marginBottom: 32,
+                                display: "block",
+                                fontFamily: "'Chakra Petch', sans-serif",
+                                fontSize: 12,
+                                color: "#FF4444",
+                                letterSpacing: 1,
+                            }}
+                        >
             /// FINISH_SESSION
-                    </motion.span>
-                </Link>
-            </div>
+                        </motion.span>
+                    </Link>
+                </div>{/* End of scrollable container */}
+            </div>{/* End of phone frame */}
         </main >
     );
 }
