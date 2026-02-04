@@ -50,15 +50,15 @@ body {
   overflow-x: hidden;
 }
 
-/* Phone Frame Container */
+/* Phone Frame Container - Responsive */
 .phone-frame {
-  width: 393px;
-  height: 852px;
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
   background: var(--color-bg-primary);
-  border-radius: 40px;
+  border-radius: 0;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 60px rgba(204, 255, 0, 0.1);
 }
 
 /* Utility Classes */
@@ -92,7 +92,7 @@ body {
   inset: 0;
   pointer-events: none;
   opacity: 0.05;
-  background-image: 
+  background-image:
     linear-gradient(to right, #fff 1px, transparent 1px),
     linear-gradient(to bottom, #fff 1px, transparent 1px);
   background-size: 50px 50px;
@@ -100,8 +100,15 @@ body {
 
 /* Pulse Animation */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .animate-pulse-slow {

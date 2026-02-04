@@ -160,13 +160,11 @@ export default function LabScreen() {
 
     return (
         <main className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-            {/* Phone Frame */}
+            {/* Phone Frame - Responsive */}
             <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden w-full h-dvh max-w-md"
                 style={{
-                    width: 393,
-                    height: 852,
-                    borderRadius: 40,
+                    borderRadius: 0,
                     backgroundColor: "#0A0A0A",
                 }}
             >

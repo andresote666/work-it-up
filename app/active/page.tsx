@@ -180,11 +180,9 @@ export default function ActiveScreen() {
         return (
             <main className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
                 <div
-                    className="relative overflow-hidden flex items-center justify-center"
+                    className="relative overflow-hidden flex items-center justify-center w-full h-dvh max-w-md"
                     style={{
-                        width: 393,
-                        height: 852,
-                        borderRadius: 40,
+                        borderRadius: 0,
                         backgroundColor: "#0A0A0A",
                     }}
                 >
@@ -379,13 +377,11 @@ export default function ActiveScreen() {
 
     return (
         <main className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-            {/* Phone Frame - 393x852 */}
+            {/* Phone Frame - Responsive */}
             <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden w-full h-dvh max-w-md"
                 style={{
-                    width: 393,
-                    height: 852,
-                    borderRadius: 40,
+                    borderRadius: 0,
                     backgroundColor: "#0A0A0A",
                 }}
             >
