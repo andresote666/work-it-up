@@ -1,0 +1,601 @@
+{
+    "exercises": [
+        {
+            "id": "bench_press",
+            "name": "BENCH PRESS",
+            "muscle": "CHEST",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "incline_bench_press",
+            "name": "INCLINE BENCH PRESS",
+            "muscle": "CHEST",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "decline_bench_press",
+            "name": "DECLINE BENCH PRESS",
+            "muscle": "CHEST",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "dumbbell_bench_press",
+            "name": "DUMBBELL BENCH PRESS",
+            "muscle": "CHEST",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "incline_dumbbell_press",
+            "name": "INCLINE DUMBBELL PRESS",
+            "muscle": "CHEST",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "decline_dumbbell_press",
+            "name": "DECLINE DUMBBELL PRESS",
+            "muscle": "CHEST",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "cable_fly",
+            "name": "CABLE FLY",
+            "muscle": "CHEST",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "low_cable_fly",
+            "name": "LOW CABLE FLY",
+            "muscle": "CHEST",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "push_up",
+            "name": "PUSH UP",
+            "muscle": "CHEST",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "diamond_push_up",
+            "name": "DIAMOND PUSH UP",
+            "muscle": "CHEST",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "dumbbell_fly",
+            "name": "DUMBBELL FLY",
+            "muscle": "CHEST",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "incline_dumbbell_fly",
+            "name": "INCLINE DUMBBELL FLY",
+            "muscle": "CHEST",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "chest_dip",
+            "name": "CHEST DIP",
+            "muscle": "CHEST",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "pec_deck",
+            "name": "PEC DECK",
+            "muscle": "CHEST",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "machine_chest_press",
+            "name": "MACHINE CHEST PRESS",
+            "muscle": "CHEST",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "deadlift",
+            "name": "DEADLIFT",
+            "muscle": "BACK",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "sumo_deadlift",
+            "name": "SUMO DEADLIFT",
+            "muscle": "BACK",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "pull_up",
+            "name": "PULL UP",
+            "muscle": "BACK",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "chin_up",
+            "name": "CHIN UP",
+            "muscle": "BACK",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "barbell_row",
+            "name": "BARBELL ROW",
+            "muscle": "BACK",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "pendlay_row",
+            "name": "PENDLAY ROW",
+            "muscle": "BACK",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "lat_pulldown",
+            "name": "LAT PULLDOWN",
+            "muscle": "BACK",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "close_grip_pulldown",
+            "name": "CLOSE GRIP PULLDOWN",
+            "muscle": "BACK",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "dumbbell_row",
+            "name": "DUMBBELL ROW",
+            "muscle": "BACK",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "seated_cable_row",
+            "name": "SEATED CABLE ROW",
+            "muscle": "BACK",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "t_bar_row",
+            "name": "T-BAR ROW",
+            "muscle": "BACK",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "straight_arm_pulldown",
+            "name": "STRAIGHT ARM PULLDOWN",
+            "muscle": "BACK",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "hyperextension",
+            "name": "HYPEREXTENSION",
+            "muscle": "BACK",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "cable_pullover",
+            "name": "CABLE PULLOVER",
+            "muscle": "BACK",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "machine_row",
+            "name": "MACHINE ROW",
+            "muscle": "BACK",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "squat",
+            "name": "SQUAT",
+            "muscle": "LEGS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "front_squat",
+            "name": "FRONT SQUAT",
+            "muscle": "LEGS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "leg_press",
+            "name": "LEG PRESS",
+            "muscle": "LEGS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "hack_squat",
+            "name": "HACK SQUAT",
+            "muscle": "LEGS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "romanian_deadlift",
+            "name": "ROMANIAN DEADLIFT",
+            "muscle": "LEGS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "stiff_leg_deadlift",
+            "name": "STIFF LEG DEADLIFT",
+            "muscle": "LEGS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "lunges",
+            "name": "LUNGES",
+            "muscle": "LEGS",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "walking_lunges",
+            "name": "WALKING LUNGES",
+            "muscle": "LEGS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "bulgarian_split_squat",
+            "name": "BULGARIAN SPLIT SQUAT",
+            "muscle": "LEGS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "goblet_squat",
+            "name": "GOBLET SQUAT",
+            "muscle": "LEGS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "leg_curl",
+            "name": "LEG CURL",
+            "muscle": "LEGS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "seated_leg_curl",
+            "name": "SEATED LEG CURL",
+            "muscle": "LEGS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "leg_extension",
+            "name": "LEG EXTENSION",
+            "muscle": "LEGS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "calf_raise",
+            "name": "CALF RAISE",
+            "muscle": "LEGS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "seated_calf_raise",
+            "name": "SEATED CALF RAISE",
+            "muscle": "LEGS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "hip_thrust",
+            "name": "HIP THRUST",
+            "muscle": "LEGS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "glute_bridge",
+            "name": "GLUTE BRIDGE",
+            "muscle": "LEGS",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "step_ups",
+            "name": "STEP UPS",
+            "muscle": "LEGS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "sumo_squat",
+            "name": "SUMO SQUAT",
+            "muscle": "LEGS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "sissy_squat",
+            "name": "SISSY SQUAT",
+            "muscle": "LEGS",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "overhead_press",
+            "name": "OVERHEAD PRESS",
+            "muscle": "SHOULDERS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "seated_dumbbell_press",
+            "name": "SEATED DUMBBELL PRESS",
+            "muscle": "SHOULDERS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "lateral_raise",
+            "name": "LATERAL RAISE",
+            "muscle": "SHOULDERS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "cable_lateral_raise",
+            "name": "CABLE LATERAL RAISE",
+            "muscle": "SHOULDERS",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "front_raise",
+            "name": "FRONT RAISE",
+            "muscle": "SHOULDERS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "face_pull",
+            "name": "FACE PULL",
+            "muscle": "SHOULDERS",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "arnold_press",
+            "name": "ARNOLD PRESS",
+            "muscle": "SHOULDERS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "rear_delt_fly",
+            "name": "REAR DELT FLY",
+            "muscle": "SHOULDERS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "cable_rear_delt_fly",
+            "name": "CABLE REAR DELT FLY",
+            "muscle": "SHOULDERS",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "shrugs",
+            "name": "SHRUGS",
+            "muscle": "SHOULDERS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "barbell_shrugs",
+            "name": "BARBELL SHRUGS",
+            "muscle": "SHOULDERS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "upright_row",
+            "name": "UPRIGHT ROW",
+            "muscle": "SHOULDERS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "machine_shoulder_press",
+            "name": "MACHINE SHOULDER PRESS",
+            "muscle": "SHOULDERS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "reverse_pec_deck",
+            "name": "REVERSE PEC DECK",
+            "muscle": "SHOULDERS",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "bicep_curl",
+            "name": "BICEP CURL",
+            "muscle": "ARMS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "barbell_curl",
+            "name": "BARBELL CURL",
+            "muscle": "ARMS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "hammer_curl",
+            "name": "HAMMER CURL",
+            "muscle": "ARMS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "concentration_curl",
+            "name": "CONCENTRATION CURL",
+            "muscle": "ARMS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "cable_curl",
+            "name": "CABLE CURL",
+            "muscle": "ARMS",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "preacher_curl",
+            "name": "PREACHER CURL",
+            "muscle": "ARMS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "incline_curl",
+            "name": "INCLINE CURL",
+            "muscle": "ARMS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "ez_bar_curl",
+            "name": "EZ BAR CURL",
+            "muscle": "ARMS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "tricep_pushdown",
+            "name": "TRICEP PUSHDOWN",
+            "muscle": "ARMS",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "rope_pushdown",
+            "name": "ROPE PUSHDOWN",
+            "muscle": "ARMS",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "skull_crusher",
+            "name": "SKULL CRUSHER",
+            "muscle": "ARMS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "tricep_dip",
+            "name": "TRICEP DIP",
+            "muscle": "ARMS",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "overhead_tricep_extension",
+            "name": "OVERHEAD TRICEP EXTENSION",
+            "muscle": "ARMS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "cable_overhead_extension",
+            "name": "CABLE OVERHEAD EXTENSION",
+            "muscle": "ARMS",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "tricep_kickback",
+            "name": "TRICEP KICKBACK",
+            "muscle": "ARMS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "close_grip_bench_press",
+            "name": "CLOSE GRIP BENCH PRESS",
+            "muscle": "ARMS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "wrist_curl",
+            "name": "WRIST CURL",
+            "muscle": "ARMS",
+            "equipment": "DUMBBELL"
+        },
+        {
+            "id": "reverse_curl",
+            "name": "REVERSE CURL",
+            "muscle": "ARMS",
+            "equipment": "BARBELL"
+        },
+        {
+            "id": "plank",
+            "name": "PLANK",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "side_plank",
+            "name": "SIDE PLANK",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "crunches",
+            "name": "CRUNCHES",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "bicycle_crunch",
+            "name": "BICYCLE CRUNCH",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "leg_raise",
+            "name": "LEG RAISE",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "hanging_leg_raise",
+            "name": "HANGING LEG RAISE",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "cable_crunch",
+            "name": "CABLE CRUNCH",
+            "muscle": "CORE",
+            "equipment": "CABLE"
+        },
+        {
+            "id": "russian_twist",
+            "name": "RUSSIAN TWIST",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "mountain_climber",
+            "name": "MOUNTAIN CLIMBER",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "ab_wheel_rollout",
+            "name": "AB WHEEL ROLLOUT",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "dead_bug",
+            "name": "DEAD BUG",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "hollow_body_hold",
+            "name": "HOLLOW BODY HOLD",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "v_ups",
+            "name": "V-UPS",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "toe_touches",
+            "name": "TOE TOUCHES",
+            "muscle": "CORE",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "wood_chops",
+            "name": "WOOD CHOPS",
+            "muscle": "CORE",
+            "equipment": "CABLE"
+        }
+    ],
+    "muscles": [
+        "CHEST",
+        "BACK",
+        "LEGS",
+        "SHOULDERS",
+        "ARMS",
+        "CORE"
+    ],
+    "equipment": [
+        "BARBELL",
+        "DUMBBELL",
+        "CABLE",
+        "BODYWEIGHT",
+        "MACHINE"
+    ]
+}

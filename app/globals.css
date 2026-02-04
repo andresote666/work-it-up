@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+/* ========================================
+   GLITCH SPORT - Global Theme
+   ======================================== */
+
+:root {
+  /* Core Colors */
+  --color-bg-primary: #0A0A0A;
+  --color-bg-secondary: #111111;
+  --color-bg-tertiary: #1A1A1A;
+
+  /* Accent Colors */
+  --color-neon: #CCFF00;
+  --color-critical: #FF4444;
+  --color-dormant: #4444FF;
+  --color-warning: #FF8800;
+
+  /* Text Colors */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #888888;
+  --color-text-muted: #555555;
+  --color-text-dim: #333333;
+
+  /* Fonts */
+  --font-display: 'Rubik Mono One', monospace;
+  --font-body: 'Chakra Petch', sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--color-bg-primary);
+  --color-foreground: var(--color-text-primary);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-display);
+}
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Phone Frame Container */
+.phone-frame {
+  width: 393px;
+  height: 852px;
+  background: var(--color-bg-primary);
+  border-radius: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(204, 255, 0, 0.1);
+}
+
+/* Utility Classes */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.text-neon {
+  color: var(--color-neon);
+}
+
+.bg-neon {
+  background: var(--color-neon);
+}
+
+.text-critical {
+  color: var(--color-critical);
+}
+
+.text-dormant {
+  color: var(--color-dormant);
+}
+
+/* Glitch Grid Overlay */
+.glitch-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: 
+    linear-gradient(to right, #fff 1px, transparent 1px),
+    linear-gradient(to bottom, #fff 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Neon Glow */
+.glow-neon {
+  box-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
+}
+
+/* Card Styles */
+.card {
+  background: var(--color-bg-secondary);
+  border-radius: 4px;
+  padding: 24px;
+}
+
+.card-active {
+  border: 1px solid var(--color-neon);
+}
