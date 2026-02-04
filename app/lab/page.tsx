@@ -9,6 +9,7 @@ import BodyHeatmap from "../components/BodyHeatmap";
 /**
  * Screen 5: The Lab / WORKOUT_SCREEN5
  * Now with DYNAMIC HEATMAP based on actual workout data!
+ * FULLY RESPONSIVE with flex layout
  */
 
 interface MuscleIntensity {
@@ -81,7 +82,7 @@ const calculateWeeklyData = (history: WorkoutHistoryEntry[]): DayData[] => {
 
         return {
             day,
-            height: Math.min(80, Math.max(4, totalVolume)), // 4-80 range for bar height
+            height: Math.min(60, Math.max(4, totalVolume)), // 4-60 range for bar height (reduced for flex)
             active: totalVolume > 0,
             today: index === todayDayIndex,
             volume: totalVolume,
@@ -160,22 +161,20 @@ export default function LabScreen() {
 
     return (
         <main className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-            {/* Phone Frame - Responsive */}
+            {/* Phone Frame - Responsive with flex column layout */}
             <div
-                className="relative overflow-hidden w-full h-dvh max-w-md"
+                className="relative overflow-hidden w-full h-dvh max-w-md flex flex-col"
                 style={{
-                    borderRadius: 0,
                     backgroundColor: "#0A0A0A",
+                    padding: 24,
+                    paddingTop: 48,
                 }}
             >
                 {/* Dev Navigation */}
                 <DevNavigation />
 
-                {/* Header at x:24 y:48 */}
-                <div
-                    className="absolute flex flex-col"
-                    style={{ left: 24, top: 48, width: 345, gap: -5 }}
-                >
+                {/* Header */}
+                <div className="flex flex-col shrink-0" style={{ gap: -5 }}>
                     <span
                         style={{
                             fontFamily: "'Rubik Mono One', monospace",
@@ -193,206 +192,202 @@ export default function LabScreen() {
                             letterSpacing: 1,
                         }}
                     >
-            // DIAGNOSTICS
+                        // DIAGNOSTICS
                     </span>
                 </div>
 
-                {/* "SYSTEM_HEATMAP" label at x:24 y:120 */}
-                <span
-                    className="absolute"
-                    style={{
-                        left: 24,
-                        top: 120,
-                        fontFamily: "'Chakra Petch', sans-serif",
-                        fontSize: 10,
-                        color: "#888888",
-                        letterSpacing: 1,
-                    }}
-                >
-                    SYSTEM_HEATMAP
-                </span>
+                {/* Scrollable content area */}
+                <div className="flex-1 overflow-y-auto" style={{ marginTop: 16 }}>
+                    {/* "SYSTEM_HEATMAP" label */}
+                    <span
+                        style={{
+                            fontFamily: "'Chakra Petch', sans-serif",
+                            fontSize: 10,
+                            color: "#888888",
+                            letterSpacing: 1,
+                        }}
+                    >
+                        SYSTEM_HEATMAP
+                    </span>
 
-                {/* Dynamic Heatmap Frame at x:24 y:140, width:345, height:300 */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                    className="absolute"
-                    style={{
-                        left: 24,
-                        top: 140,
-                        width: 345,
-                        height: 300,
-                        backgroundColor: "#0a0a0a",
-                        borderRadius: 4,
-                        overflow: "hidden",
-                        border: "1px solid #222222",
-                    }}
-                >
-                    {/* Dynamic Body Heatmap */}
-                    <BodyHeatmap muscleIntensity={muscleIntensity} />
+                    {/* Dynamic Heatmap Frame */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                        style={{
+                            marginTop: 8,
+                            width: "100%",
+                            height: 260,
+                            backgroundColor: "#0a0a0a",
+                            borderRadius: 4,
+                            overflow: "hidden",
+                            border: "1px solid #222222",
+                            position: "relative",
+                        }}
+                    >
+                        {/* Dynamic Body Heatmap */}
+                        <BodyHeatmap muscleIntensity={muscleIntensity} />
 
-                    {/* Last workout indicator */}
-                    {lastWorkoutTime && (
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute"
-                            style={{
-                                left: 8,
-                                bottom: 8,
-                                fontFamily: "'Chakra Petch', sans-serif",
-                                fontSize: 7,
-                                color: "#444444",
-                                letterSpacing: 0.5,
-                            }}
-                        >
-                            LAST: {new Date(lastWorkoutTime).toLocaleDateString()}
-                        </motion.span>
-                    )}
-                </motion.div>
-
-                {/* "WEEKLY_VOLUME" at x:24 y:480 */}
-                <span
-                    className="absolute"
-                    style={{
-                        left: 24,
-                        top: 480,
-                        fontFamily: "'Chakra Petch', sans-serif",
-                        fontSize: 10,
-                        color: "#888888",
-                        letterSpacing: 1,
-                    }}
-                >
-                    WEEKLY_VOLUME
-                </span>
-
-                {/* Volume Bars at x:24 y:500, height:100 - Animated */}
-                <div
-                    className="absolute flex items-end justify-between"
-                    style={{ left: 24, top: 500, width: 345, height: 100 }}
-                >
-                    {weeklyData.map((d, i) => (
-                        <div
-                            key={i}
-                            className="flex flex-col items-center"
-                            style={{ gap: 8 }}
-                        >
-                            <motion.div
-                                initial={{ height: 0 }}
-                                animate={{ height: d.height }}
-                                transition={{
-                                    delay: 0.5 + i * 0.1,
-                                    duration: 0.6,
-                                    ease: "easeOut"
-                                }}
-                                whileHover={{
-                                    scale: 1.1,
-                                    boxShadow: d.active
-                                        ? "0 0 12px rgba(204, 255, 0, 0.5)"
-                                        : "none"
-                                }}
-                                style={{
-                                    width: 30,
-                                    backgroundColor: d.today ? "#FFFFFF" : d.active ? "#CCFF00" : "#333333",
-                                    borderRadius: 2,
-                                }}
-                            />
+                        {/* Last workout indicator */}
+                        {lastWorkoutTime && (
                             <motion.span
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                transition={{ delay: 0.8 + i * 0.1 }}
+                                className="absolute"
+                                style={{
+                                    left: 8,
+                                    bottom: 8,
+                                    fontFamily: "'Chakra Petch', sans-serif",
+                                    fontSize: 7,
+                                    color: "#444444",
+                                    letterSpacing: 0.5,
+                                }}
+                            >
+                                LAST: {new Date(lastWorkoutTime).toLocaleDateString()}
+                            </motion.span>
+                        )}
+                    </motion.div>
+
+                    {/* "WEEKLY_VOLUME" */}
+                    <span
+                        style={{
+                            display: "block",
+                            marginTop: 24,
+                            fontFamily: "'Chakra Petch', sans-serif",
+                            fontSize: 10,
+                            color: "#888888",
+                            letterSpacing: 1,
+                        }}
+                    >
+                        WEEKLY_VOLUME
+                    </span>
+
+                    {/* Volume Bars - Animated */}
+                    <div
+                        className="flex items-end justify-between"
+                        style={{ marginTop: 8, width: "100%", height: 80 }}
+                    >
+                        {weeklyData.map((d, i) => (
+                            <div
+                                key={i}
+                                className="flex flex-col items-center"
+                                style={{ gap: 8 }}
+                            >
+                                <motion.div
+                                    initial={{ height: 0 }}
+                                    animate={{ height: d.height }}
+                                    transition={{
+                                        delay: 0.5 + i * 0.1,
+                                        duration: 0.6,
+                                        ease: "easeOut"
+                                    }}
+                                    whileHover={{
+                                        scale: 1.1,
+                                        boxShadow: d.active
+                                            ? "0 0 12px rgba(204, 255, 0, 0.5)"
+                                            : "none"
+                                    }}
+                                    style={{
+                                        width: 30,
+                                        backgroundColor: d.today ? "#FFFFFF" : d.active ? "#CCFF00" : "#333333",
+                                        borderRadius: 2,
+                                    }}
+                                />
+                                <motion.span
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.8 + i * 0.1 }}
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 10,
+                                        color: d.today ? "#FFFFFF" : "#555555",
+                                    }}
+                                >
+                                    {d.day}
+                                </motion.span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Energy / Recommendation - Interactive */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.2, duration: 0.5 }}
+                        className="flex flex-col"
+                        style={{ marginTop: 24, width: "100%", gap: 12 }}
+                    >
+                        {/* Header Row */}
+                        <div className="flex items-center justify-between" style={{ width: "100%" }}>
+                            <span
                                 style={{
                                     fontFamily: "'Chakra Petch', sans-serif",
                                     fontSize: 10,
-                                    color: d.today ? "#FFFFFF" : "#555555",
+                                    color: "#888888",
+                                    letterSpacing: 1,
                                 }}
                             >
-                                {d.day}
+                                ENERGY_LEVEL // AUTO_RECOVERY
+                            </span>
+                            <motion.span
+                                key={energyPercent}
+                                initial={{ scale: 1.2 }}
+                                animate={{ scale: 1 }}
+                                style={{
+                                    fontFamily: "'Rubik Mono One', monospace",
+                                    fontSize: 12,
+                                    color: energyPercent >= 80 ? "#CCFF00" : energyPercent >= 50 ? "#FFAA00" : "#FF4444",
+                                }}
+                            >
+                                {energyPercent}% // {energyStatus}
                             </motion.span>
                         </div>
-                    ))}
-                </div>
-
-                {/* Energy / Recommendation at x:24 y:640 - Interactive */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.2, duration: 0.5 }}
-                    className="absolute flex flex-col"
-                    style={{ left: 24, top: 640, width: 345, gap: 12 }}
-                >
-                    {/* Header Row */}
-                    <div className="flex items-center justify-between" style={{ width: "100%" }}>
-                        <span
+                        {/* Automated Battery Bar - Display Only */}
+                        <div className="flex" style={{ gap: 4, height: 24 }}>
+                            {[1, 2, 3, 4, 5, 6].map((i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ scaleY: 0 }}
+                                    animate={{ scaleY: 1 }}
+                                    transition={{ delay: 1.4 + i * 0.05, duration: 0.3 }}
+                                    style={{
+                                        flex: 1,
+                                        height: 24,
+                                        backgroundColor: i <= energyLevel
+                                            ? (energyLevel >= 5 ? "#CCFF00" : energyLevel >= 3 ? "#FFAA00" : "#FF4444")
+                                            : "#222222",
+                                        borderRadius: 4,
+                                        transformOrigin: "bottom",
+                                        boxShadow: i <= energyLevel && i === energyLevel
+                                            ? `0 0 8px ${energyLevel >= 5 ? "rgba(204, 255, 0, 0.5)" : energyLevel >= 3 ? "rgba(255, 170, 0, 0.5)" : "rgba(255, 68, 68, 0.5)"}`
+                                            : "none",
+                                    }}
+                                />
+                            ))}
+                        </div>
+                        {/* Dynamic Insight */}
+                        <motion.span
+                            key={recommendation}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.3 }}
                             style={{
                                 fontFamily: "'Chakra Petch', sans-serif",
-                                fontSize: 10,
-                                color: "#888888",
-                                letterSpacing: 1,
+                                fontSize: 14,
+                                color: "#FFFFFF",
                             }}
                         >
-                            ENERGY_LEVEL // AUTO_RECOVERY
-                        </span>
-                        <motion.span
-                            key={energyPercent}
-                            initial={{ scale: 1.2 }}
-                            animate={{ scale: 1 }}
-                            style={{
-                                fontFamily: "'Rubik Mono One', monospace",
-                                fontSize: 12,
-                                color: energyPercent >= 80 ? "#CCFF00" : energyPercent >= 50 ? "#FFAA00" : "#FF4444",
-                            }}
-                        >
-                            {energyPercent}% // {energyStatus}
+                            {recommendation}
                         </motion.span>
-                    </div>
-                    {/* Automated Battery Bar - Display Only */}
-                    <div className="flex" style={{ gap: 4, height: 24 }}>
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ scaleY: 0 }}
-                                animate={{ scaleY: 1 }}
-                                transition={{ delay: 1.4 + i * 0.05, duration: 0.3 }}
-                                style={{
-                                    flex: 1,
-                                    height: 24,
-                                    backgroundColor: i <= energyLevel
-                                        ? (energyLevel >= 5 ? "#CCFF00" : energyLevel >= 3 ? "#FFAA00" : "#FF4444")
-                                        : "#222222",
-                                    borderRadius: 4,
-                                    transformOrigin: "bottom",
-                                    boxShadow: i <= energyLevel && i === energyLevel
-                                        ? `0 0 8px ${energyLevel >= 5 ? "rgba(204, 255, 0, 0.5)" : energyLevel >= 3 ? "rgba(255, 170, 0, 0.5)" : "rgba(255, 68, 68, 0.5)"}`
-                                        : "none",
-                                }}
-                            />
-                        ))}
-                    </div>
-                    {/* Dynamic Insight */}
-                    <motion.span
-                        key={recommendation}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        style={{
-                            fontFamily: "'Chakra Petch', sans-serif",
-                            fontSize: 14,
-                            color: "#FFFFFF",
-                        }}
-                    >
-                        {recommendation}
-                    </motion.span>
-                </motion.div>
+                    </motion.div>
+                </div>
 
-                {/* "< RETURN_TO_BASE" at x:24 y:730 - moved up for proper margin above nav */}
-                <Link href="/">
+                {/* "< RETURN_TO_BASE" - fixed at bottom */}
+                <Link href="/" className="shrink-0" style={{ marginTop: 16 }}>
                     <span
-                        className="absolute cursor-pointer hover:text-white transition-colors"
+                        className="cursor-pointer hover:text-white transition-colors"
                         style={{
-                            left: 24,
-                            top: 730,
                             fontFamily: "'Chakra Petch', sans-serif",
                             fontSize: 12,
                             color: "#555555",

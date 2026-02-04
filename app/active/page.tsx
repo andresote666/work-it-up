@@ -999,7 +999,10 @@ export default function ActiveScreen() {
                     </div>
 
                     {/* finishLink - relative positioning for flow */}
-                    <Link href="/lab">
+                    <Link href="/lab" onClick={() => {
+                        // Clear builder exercises when finishing session so Builder starts fresh
+                        localStorage.removeItem("builderExercises");
+                    }}>
                         <motion.span
                             whileHover={{ color: "#FFFFFF" }}
                             whileTap={{ scale: 0.98 }}
