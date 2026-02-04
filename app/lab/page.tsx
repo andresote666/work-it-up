@@ -168,6 +168,7 @@ export default function LabScreen() {
                     backgroundColor: "#0A0A0A",
                     padding: 24,
                     paddingTop: 48,
+                    paddingBottom: 80, // Account for DevNavigation bar
                 }}
             >
                 {/* Dev Navigation */}
@@ -383,8 +384,8 @@ export default function LabScreen() {
                     </motion.div>
                 </div>
 
-                {/* "< RETURN_TO_BASE" - fixed at bottom */}
-                <Link href="/" className="shrink-0" style={{ marginTop: 16 }}>
+                {/* "< RETURN_TO_BASE" - fixed at bottom, above DevNavigation */}
+                <Link href="/" className="shrink-0" style={{ marginTop: 24 }}>
                     <span
                         className="cursor-pointer hover:text-white transition-colors"
                         style={{
