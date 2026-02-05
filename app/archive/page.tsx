@@ -85,12 +85,31 @@ function CountUp({ target }: { target: number }) {
     return <>{count}%</>;
 }
 
+// Types for day-based routines
+type DayOfWeek = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
+interface WeeklyRoutines {
+    [key: string]: { id: number; name: string; muscle: string; equipment: string }[] | undefined;
+}
+
+const DAYS: { key: DayOfWeek; label: string }[] = [
+    { key: 'sun', label: 'S' },
+    { key: 'mon', label: 'M' },
+    { key: 'tue', label: 'T' },
+    { key: 'wed', label: 'W' },
+    { key: 'thu', label: 'T' },
+    { key: 'fri', label: 'F' },
+    { key: 'sat', label: 'S' },
+];
+
 export default function ArchiveScreen() {
     const [workoutHistory, setWorkoutHistory] = useState<WorkoutHistoryEntry[]>([]);
     const [expandedId, setExpandedId] = useState<number | null>(null);
     const [activeFilter, setActiveFilter] = useState<string>("ALL");
     const [isLoaded, setIsLoaded] = useState(false);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [saveRoutineModalOpen, setSaveRoutineModalOpen] = useState(false);
+    const [workoutToSave, setWorkoutToSave] = useState<WorkoutHistoryEntry | null>(null);
+    const [weeklyRoutines, setWeeklyRoutines] = useState<WeeklyRoutines>({});
 
     // Load workout history from localStorage
     useEffect(() => {
@@ -104,6 +123,13 @@ export default function ArchiveScreen() {
             } catch {
                 // Use empty if parsing fails
             }
+        }
+        // Load weekly routines
+        const storedRoutines = localStorage.getItem("weeklyRoutines");
+        if (storedRoutines) {
+            try {
+                setWeeklyRoutines(JSON.parse(storedRoutines));
+            } catch { /* ignore */ }
         }
         setIsLoaded(true);
     }, []);
@@ -155,6 +181,36 @@ export default function ArchiveScreen() {
         window.location.href = "/builder";
     };
 
+    // SAVE AS ROUTINE: Open modal to save workout to a day
+    const handleSaveAsRoutine = (workout: WorkoutHistoryEntry, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setWorkoutToSave(workout);
+        setSaveRoutineModalOpen(true);
+    };
+
+    // Save workout to a specific day
+    const saveWorkoutToDay = (day: DayOfWeek) => {
+        if (!workoutToSave) return;
+
+        // Transform workout exercises to routine format
+        const routineExercises = workoutToSave.exerciseDetails.map((ex, idx) => ({
+            id: idx + 1,
+            name: ex.name.toLowerCase().replace(/_/g, " "),
+            muscle: ex.muscle,
+            equipment: "barbell",
+        }));
+
+        const updatedRoutines = {
+            ...weeklyRoutines,
+            [day]: routineExercises,
+        };
+
+        setWeeklyRoutines(updatedRoutines);
+        localStorage.setItem("weeklyRoutines", JSON.stringify(updatedRoutines));
+        setSaveRoutineModalOpen(false);
+        setWorkoutToSave(null);
+    };
+
     // Get unique muscle groups for filter
     const allMuscles = new Set<string>();
     workoutHistory.forEach(w => w.muscles.forEach(m => allMuscles.add(m)));
@@ -186,31 +242,6 @@ export default function ArchiveScreen() {
                 {/* Dev Navigation */}
                 <DevNavigation showArchiveButton={false} />
 
-                {/* Back to Builder Button */}
-                <Link href="/builder">
-                    <motion.div
-                        whileHover={{ scale: 1.05, x: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="absolute flex items-center cursor-pointer"
-                        style={{
-                            left: 24,
-                            top: 24,
-                            gap: 6,
-                        }}
-                    >
-                        <span style={{ color: "#CCFF00", fontSize: 12 }}>◀</span>
-                        <span
-                            style={{
-                                fontFamily: "'Chakra Petch', sans-serif",
-                                fontSize: 10,
-                                color: "#888888",
-                                letterSpacing: 1,
-                            }}
-                        >
-                            BUILDER
-                        </span>
-                    </motion.div>
-                </Link>
 
                 {/* Header at x:24 y:48 */}
                 <div
@@ -711,6 +742,30 @@ export default function ArchiveScreen() {
                                                     EDIT
                                                 </span>
                                             </motion.button>
+
+                                            {/* SAVE AS ROUTINE Button */}
+                                            <motion.button
+                                                onClick={(e) => handleSaveAsRoutine(log, e)}
+                                                whileHover={{
+                                                    scale: 1.02,
+                                                    backgroundColor: "#2a2a2a",
+                                                    borderColor: "#CCFF00",
+                                                }}
+                                                whileTap={{ scale: 0.98 }}
+                                                className="flex items-center justify-center"
+                                                style={{
+                                                    width: 36,
+                                                    height: 36,
+                                                    backgroundColor: "#1a1a1a",
+                                                    border: "1px solid #333333",
+                                                    borderRadius: 4,
+                                                    cursor: "pointer",
+                                                    transition: "all 0.2s ease",
+                                                }}
+                                                title="Save as Routine"
+                                            >
+                                                <span style={{ fontSize: 14, color: "#CCFF00" }}>💾</span>
+                                            </motion.button>
                                         </motion.div>
                                     </motion.div>
                                 )}
@@ -719,22 +774,6 @@ export default function ArchiveScreen() {
                     ))}
                 </div>
 
-                {/* Back Link */}
-                <Link href="/builder">
-                    <span
-                        className="absolute cursor-pointer hover:text-white transition-colors"
-                        style={{
-                            left: 24,
-                            top: 780,
-                            fontFamily: "'Chakra Petch', sans-serif",
-                            fontSize: 12,
-                            color: "#555555",
-                            letterSpacing: 1,
-                        }}
-                    >
-                        &gt; BUILDER
-                    </span>
-                </Link>
 
                 {/* Clear Archive Confirmation Modal */}
                 <AnimatePresence>
@@ -870,6 +909,117 @@ export default function ArchiveScreen() {
                                         CLEAR_ALL
                                     </motion.button>
                                 </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* SAVE TO DAY Modal */}
+                <AnimatePresence>
+                    {saveRoutineModalOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="absolute inset-0 flex items-center justify-center"
+                            style={{
+                                backgroundColor: "rgba(0, 0, 0, 0.9)",
+                                zIndex: 100,
+                            }}
+                            onClick={() => {
+                                setSaveRoutineModalOpen(false);
+                                setWorkoutToSave(null);
+                            }}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, y: 20 }}
+                                animate={{ scale: 1, y: 0 }}
+                                exit={{ scale: 0.9, y: 20 }}
+                                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                className="flex flex-col items-center"
+                                style={{
+                                    backgroundColor: "#111111",
+                                    borderRadius: 8,
+                                    padding: 24,
+                                    width: 320,
+                                    border: "1px solid #222222",
+                                    gap: 20,
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <span
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 12,
+                                        color: "#888888",
+                                        letterSpacing: 2,
+                                    }}
+                                >
+                                    SAVE_TO_DAY
+                                </span>
+
+                                {/* Day Buttons */}
+                                <div className="flex justify-between w-full" style={{ gap: 8 }}>
+                                    {DAYS.map((day) => {
+                                        const hasRoutine = weeklyRoutines[day.key] && weeklyRoutines[day.key]!.length > 0;
+                                        return (
+                                            <motion.button
+                                                key={day.key}
+                                                onClick={() => saveWorkoutToDay(day.key)}
+                                                whileHover={{ scale: 1.1, backgroundColor: "#222222" }}
+                                                whileTap={{ scale: 0.95 }}
+                                                className="flex flex-col items-center justify-center"
+                                                style={{
+                                                    width: 36,
+                                                    height: 44,
+                                                    borderRadius: 6,
+                                                    backgroundColor: "#1A1A1A",
+                                                    border: hasRoutine ? "1px solid #CCFF00" : "1px solid #333333",
+                                                    cursor: "pointer",
+                                                    gap: 2,
+                                                }}
+                                            >
+                                                <span
+                                                    style={{
+                                                        fontFamily: "'Rubik Mono One', monospace",
+                                                        fontSize: 12,
+                                                        color: hasRoutine ? "#CCFF00" : "#FFFFFF",
+                                                    }}
+                                                >
+                                                    {day.label}
+                                                </span>
+                                                {hasRoutine && (
+                                                    <span style={{ fontSize: 6, color: "#CCFF00" }}>●</span>
+                                                )}
+                                            </motion.button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Cancel Button */}
+                                <motion.button
+                                    onClick={() => {
+                                        setSaveRoutineModalOpen(false);
+                                        setWorkoutToSave(null);
+                                    }}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    style={{
+                                        width: "100%",
+                                        height: 40,
+                                        backgroundColor: "#1A1A1A",
+                                        border: "1px solid #333333",
+                                        borderRadius: 4,
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 11,
+                                        color: "#666666",
+                                        letterSpacing: 1,
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    CANCEL
+                                </motion.button>
                             </motion.div>
                         </motion.div>
                     )}

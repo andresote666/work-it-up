@@ -22,6 +22,22 @@ interface Exercise {
     gifUrl: string;
 }
 
+// Day-based saved routines
+type DayOfWeek = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
+interface WeeklyRoutines {
+    [key: string]: Exercise[] | undefined;
+}
+
+const DAYS: { key: DayOfWeek; label: string }[] = [
+    { key: 'sun', label: 'S' },
+    { key: 'mon', label: 'M' },
+    { key: 'tue', label: 'T' },
+    { key: 'wed', label: 'W' },
+    { key: 'thu', label: 'T' },
+    { key: 'fri', label: 'F' },
+    { key: 'sat', label: 'S' },
+];
+
 export default function BuilderScreen() {
     const router = useRouter();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -34,6 +50,47 @@ export default function BuilderScreen() {
     const [gifModalExercise, setGifModalExercise] = useState<string>("");
     const [gifModalUrl, setGifModalUrl] = useState<string>("");
     const [loadingGif, setLoadingGif] = useState<string | null>(null);
+
+    // Weekly routines state
+    const [weeklyRoutines, setWeeklyRoutines] = useState<WeeklyRoutines>({});
+    const [saveToDayModalOpen, setSaveToDayModalOpen] = useState(false);
+
+    // Get today's day key
+    const getTodayKey = (): DayOfWeek => {
+        const dayIndex = new Date().getDay();
+        return DAYS[dayIndex].key;
+    };
+
+    // Load weekly routines from localStorage
+    useEffect(() => {
+        const stored = localStorage.getItem("weeklyRoutines");
+        if (stored) {
+            try {
+                setWeeklyRoutines(JSON.parse(stored));
+            } catch {
+                // Ignore if parsing fails
+            }
+        }
+    }, []);
+
+    // Load routine for a specific day
+    const loadRoutine = (day: DayOfWeek) => {
+        const routine = weeklyRoutines[day];
+        if (routine && routine.length > 0) {
+            setSelectedExercises(routine);
+            setPreloadedFrom(`routine_${day}`);
+        }
+    };
+
+    // Save current exercises to a specific day
+    const saveRoutineToDay = (day: DayOfWeek) => {
+        if (selectedExercises.length === 0) return;
+
+        const updated = { ...weeklyRoutines, [day]: selectedExercises };
+        setWeeklyRoutines(updated);
+        localStorage.setItem("weeklyRoutines", JSON.stringify(updated));
+        setSaveToDayModalOpen(false);
+    };
 
     // Load preloaded exercises from Archive (EDIT button) OR restore previous session
     useEffect(() => {
@@ -147,22 +204,69 @@ export default function BuilderScreen() {
                     >
                         BUILD
                     </span>
+                </motion.div>
+
+                {/* MY_ROUTINES - 7 Day Buttons */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25, duration: 0.4 }}
+                    className="absolute flex flex-col"
+                    style={{ left: 24, top: 95, width: 345, gap: 6 }}
+                >
                     <span
                         style={{
                             fontFamily: "'Chakra Petch', sans-serif",
-                            fontSize: 11,
-                            color: "#555555",
-                            letterSpacing: 2,
-                            marginTop: -4,
+                            fontSize: 10,
+                            color: "#888888",
+                            letterSpacing: 1,
                         }}
                     >
-                        // CONFIGURE_SESSION
+                        MY_ROUTINES
                     </span>
+                    <div className="flex justify-between" style={{ gap: 8 }}>
+                        {DAYS.map((day) => {
+                            const hasRoutine = weeklyRoutines[day.key] && weeklyRoutines[day.key]!.length > 0;
+                            const isToday = getTodayKey() === day.key;
+
+                            return (
+                                <motion.button
+                                    key={day.key}
+                                    onClick={() => loadRoutine(day.key)}
+                                    whileHover={hasRoutine ? { scale: 1.05 } : {}}
+                                    whileTap={hasRoutine ? { scale: 0.95 } : {}}
+                                    className="flex items-center justify-center"
+                                    style={{
+                                        width: 42,
+                                        height: 42,
+                                        borderRadius: 6,
+                                        backgroundColor: isToday && hasRoutine ? "#0A0A0A" : "#1A1A1A",
+                                        border: hasRoutine
+                                            ? isToday
+                                                ? "2px solid #CCFF00"
+                                                : "1px solid #CCFF00"
+                                            : "1px solid #333333",
+                                        cursor: hasRoutine ? "pointer" : "default",
+                                        opacity: hasRoutine ? 1 : 0.6,
+                                    }}
+                                >
+                                    <span
+                                        style={{
+                                            fontFamily: "'Rubik Mono One', monospace",
+                                            fontSize: 14,
+                                            color: hasRoutine ? "#CCFF00" : "#555555",
+                                        }}
+                                    >
+                                        {day.label}
+                                    </span>
+                                </motion.button>
+                            );
+                        })}
+                    </div>
                 </motion.div>
 
-                {/* Preloaded from Archive Banner */}
                 <AnimatePresence>
-                    {preloadedFrom === "archive" && (
+                    {preloadedFrom && (
                         <motion.div
                             initial={{ opacity: 0, y: -10, height: 0 }}
                             animate={{ opacity: 1, y: 0, height: "auto" }}
@@ -171,7 +275,7 @@ export default function BuilderScreen() {
                             className="absolute flex items-center justify-between"
                             style={{
                                 left: 24,
-                                top: 104,
+                                top: 160,
                                 width: 345,
                                 padding: "8px 12px",
                                 backgroundColor: "rgba(204, 255, 0, 0.1)",
@@ -180,7 +284,9 @@ export default function BuilderScreen() {
                             }}
                         >
                             <div className="flex items-center" style={{ gap: 8 }}>
-                                <span style={{ fontSize: 12 }}>🔄</span>
+                                <span style={{ fontSize: 12 }}>
+                                    {preloadedFrom === "archive" ? "🔄" : "📅"}
+                                </span>
                                 <span
                                     style={{
                                         fontFamily: "'Chakra Petch', sans-serif",
@@ -189,7 +295,9 @@ export default function BuilderScreen() {
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    LOADED_FROM_ARCHIVE
+                                    {preloadedFrom === "archive"
+                                        ? "LOADED_FROM_ARCHIVE"
+                                        : `LOADED_${preloadedFrom.replace("routine_", "").toUpperCase()}_ROUTINE`}
                                 </span>
                             </div>
                             <motion.button
@@ -252,7 +360,7 @@ export default function BuilderScreen() {
                     className="absolute flex items-center justify-center cursor-pointer"
                     style={{
                         left: 24,
-                        top: preloadedFrom ? 148 : 120, // Shift down when banner visible
+                        top: preloadedFrom ? 198 : 170, // Shift down when banner visible
                         width: 345,
                         height: 56,
                         background: "linear-gradient(135deg, #CCFF00 0%, #9BCC00 100%)",
@@ -276,9 +384,9 @@ export default function BuilderScreen() {
                     className="absolute flex flex-col"
                     style={{
                         left: 24,
-                        top: preloadedFrom ? 228 : 200, // Shift down when banner visible
+                        top: preloadedFrom ? 278 : 250, // Shift down when banner visible
                         width: 345,
-                        height: preloadedFrom ? 452 : 480, // Adjust height for banner space
+                        height: preloadedFrom ? 390 : 418, // Adjusted for MY_ROUTINES section
                         gap: 12,
                     }}
                 >
@@ -338,23 +446,42 @@ export default function BuilderScreen() {
                             </motion.button>
                         </div>
                         {selectedExercises.length > 0 && (
-                            <motion.button
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => setSelectedExercises([])}
-                                style={{
-                                    background: "none",
-                                    border: "none",
-                                    cursor: "pointer",
-                                    fontFamily: "'Chakra Petch', sans-serif",
-                                    fontSize: 9,
-                                    color: "#FF4444",
-                                    letterSpacing: 1,
-                                }}
-                            >
-                                CLEAR_ALL
-                            </motion.button>
+                            <div className="flex items-center" style={{ gap: 12 }}>
+                                <motion.button
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => setSaveToDayModalOpen(true)}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 9,
+                                        color: "#CCFF00",
+                                        letterSpacing: 1,
+                                    }}
+                                >
+                                    💾 SAVE
+                                </motion.button>
+                                <motion.button
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => setSelectedExercises([])}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 9,
+                                        color: "#FF4444",
+                                        letterSpacing: 1,
+                                    }}
+                                >
+                                    CLEAR_ALL
+                                </motion.button>
+                            </div>
                         )}
                     </motion.div>
 
@@ -688,6 +815,113 @@ export default function BuilderScreen() {
                     exerciseName={gifModalExercise}
                     gifUrl={gifModalUrl}
                 />
+
+                {/* Save to Day Modal */}
+                <AnimatePresence>
+                    {saveToDayModalOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 flex items-center justify-center z-50"
+                            style={{ backgroundColor: "rgba(0, 0, 0, 0.85)" }}
+                            onClick={() => setSaveToDayModalOpen(false)}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                className="flex flex-col items-center"
+                                style={{
+                                    backgroundColor: "#1A1A1A",
+                                    borderRadius: 12,
+                                    padding: 24,
+                                    width: 320,
+                                    gap: 16,
+                                    border: "1px solid #333333",
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <span
+                                    style={{
+                                        fontFamily: "'Rubik Mono One', monospace",
+                                        fontSize: 14,
+                                        color: "#FFFFFF",
+                                        letterSpacing: 1,
+                                    }}
+                                >
+                                    SAVE_TO_DAY
+                                </span>
+                                <span
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 11,
+                                        color: "#888888",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    Select a day to save {selectedExercises.length} exercise{selectedExercises.length !== 1 ? "s" : ""} as a routine
+                                </span>
+                                <div className="flex justify-between w-full" style={{ gap: 8 }}>
+                                    {DAYS.map((day) => {
+                                        const hasRoutine = weeklyRoutines[day.key] && weeklyRoutines[day.key]!.length > 0;
+
+                                        return (
+                                            <motion.button
+                                                key={day.key}
+                                                onClick={() => saveRoutineToDay(day.key)}
+                                                whileHover={{ scale: 1.1 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                className="flex flex-col items-center justify-center"
+                                                style={{
+                                                    width: 36,
+                                                    height: 48,
+                                                    borderRadius: 6,
+                                                    backgroundColor: hasRoutine ? "rgba(204, 255, 0, 0.1)" : "#0A0A0A",
+                                                    border: hasRoutine ? "1px solid #CCFF00" : "1px solid #333333",
+                                                    cursor: "pointer",
+                                                    gap: 2,
+                                                }}
+                                            >
+                                                <span
+                                                    style={{
+                                                        fontFamily: "'Rubik Mono One', monospace",
+                                                        fontSize: 12,
+                                                        color: hasRoutine ? "#CCFF00" : "#888888",
+                                                    }}
+                                                >
+                                                    {day.label}
+                                                </span>
+                                                {hasRoutine && (
+                                                    <span style={{ fontSize: 6, color: "#CCFF00" }}>●</span>
+                                                )}
+                                            </motion.button>
+                                        );
+                                    })}
+                                </div>
+                                <motion.button
+                                    onClick={() => setSaveToDayModalOpen(false)}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    style={{
+                                        width: "100%",
+                                        padding: "10px 16px",
+                                        backgroundColor: "transparent",
+                                        border: "1px solid #333333",
+                                        borderRadius: 6,
+                                        cursor: "pointer",
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 11,
+                                        color: "#888888",
+                                        letterSpacing: 1,
+                                    }}
+                                >
+                                    CANCEL
+                                </motion.button>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </main>
     );
