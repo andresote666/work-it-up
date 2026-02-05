@@ -161,9 +161,41 @@ export default function ActiveScreen() {
         return () => clearInterval(interval);
     }, []);
 
-    // Rest timer countdown
+    // Screen Wake Lock reference
+    const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null);
+
+    // Request wake lock to keep screen on during rest
+    const requestWakeLock = async () => {
+        try {
+            if ('wakeLock' in navigator) {
+                const lock = await navigator.wakeLock.request('screen');
+                setWakeLock(lock);
+                console.log('Wake Lock acquired - screen will stay on');
+            }
+        } catch (err) {
+            console.log('Wake Lock not available:', err);
+        }
+    };
+
+    // Release wake lock
+    const releaseWakeLock = async () => {
+        if (wakeLock) {
+            try {
+                await wakeLock.release();
+                setWakeLock(null);
+                console.log('Wake Lock released');
+            } catch (err) {
+                console.log('Error releasing wake lock:', err);
+            }
+        }
+    };
+
+    // Rest timer countdown with wake lock
     useEffect(() => {
         if (restTimer > 0) {
+            // Keep screen on during rest
+            requestWakeLock();
+
             const countdown = setInterval(() => {
                 setRestTimer(prev => {
                     if (prev <= 1) {
@@ -173,7 +205,10 @@ export default function ActiveScreen() {
                     return prev - 1;
                 });
             }, 1000);
-            return () => clearInterval(countdown);
+            return () => {
+                clearInterval(countdown);
+                releaseWakeLock();
+            };
         }
     }, [restTimer]);
 
@@ -185,6 +220,7 @@ export default function ActiveScreen() {
     const skipRest = () => {
         setRestTimer(0);
         setIsResting(false);
+        releaseWakeLock();
     };
 
     // Format seconds to HH:MM:SS
