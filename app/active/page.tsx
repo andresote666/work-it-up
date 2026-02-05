@@ -133,11 +133,31 @@ export default function ActiveScreen() {
         setIsLoaded(true);
     }, []);
 
-    // Real-time session timer
+    // Real-time session timer using persisted start time
+    // This ensures the timer continues correctly even when app goes to background
     useEffect(() => {
-        const interval = setInterval(() => {
-            setElapsedSeconds(prev => prev + 1);
-        }, 1000);
+        // Get or set session start time
+        let startTime: number;
+        const storedStartTime = localStorage.getItem("sessionStartTime");
+
+        if (storedStartTime) {
+            startTime = parseInt(storedStartTime, 10);
+        } else {
+            startTime = Date.now();
+            localStorage.setItem("sessionStartTime", startTime.toString());
+        }
+
+        // Calculate elapsed seconds from start time
+        const updateElapsed = () => {
+            const now = Date.now();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            setElapsedSeconds(elapsed);
+        };
+
+        // Update immediately and then every second
+        updateElapsed();
+        const interval = setInterval(updateElapsed, 1000);
+
         return () => clearInterval(interval);
     }, []);
 
@@ -1002,6 +1022,8 @@ export default function ActiveScreen() {
                     <Link href="/lab" onClick={() => {
                         // Clear builder exercises when finishing session so Builder starts fresh
                         localStorage.removeItem("builderExercises");
+                        // Clear session start time so next session starts fresh
+                        localStorage.removeItem("sessionStartTime");
                     }}>
                         <motion.span
                             whileHover={{ color: "#FFFFFF" }}
