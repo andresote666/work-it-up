@@ -26,7 +26,9 @@ export default function DevNavigation({ showArchiveButton = true }: DevNavigatio
     const pathname = usePathname();
 
     // Find current screen index in main flow
-    const currentIndex = mainFlow.findIndex(s => s.path === pathname);
+    // Treat /active-hiit the same as /active for navigation purposes
+    const effectivePath = pathname === "/active-hiit" ? "/active" : pathname;
+    const currentIndex = mainFlow.findIndex(s => s.path === effectivePath);
     const prevScreen = currentIndex > 0 ? mainFlow[currentIndex - 1] : null;
     const nextScreen = currentIndex < mainFlow.length - 1 ? mainFlow[currentIndex + 1] : null;
 

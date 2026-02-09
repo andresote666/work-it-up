@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import DevNavigation from "../components/DevNavigation";
@@ -20,6 +20,10 @@ interface Exercise {
     muscle: string;
     equipment: string;
     gifUrl: string;
+    // Saved routine workout data
+    savedSets?: number;
+    savedWeight?: string;
+    savedReps?: string;
 }
 
 // Day-based saved routines
@@ -54,6 +58,8 @@ export default function BuilderScreen() {
     // Weekly routines state
     const [weeklyRoutines, setWeeklyRoutines] = useState<WeeklyRoutines>({});
     const [saveToDayModalOpen, setSaveToDayModalOpen] = useState(false);
+    const [deleteConfirmDay, setDeleteConfirmDay] = useState<DayOfWeek | null>(null);
+    const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Get today's day key
     const getTodayKey = (): DayOfWeek => {
@@ -90,6 +96,35 @@ export default function BuilderScreen() {
         setWeeklyRoutines(updated);
         localStorage.setItem("weeklyRoutines", JSON.stringify(updated));
         setSaveToDayModalOpen(false);
+    };
+
+    // Delete routine from a specific day
+    const deleteRoutineFromDay = (day: DayOfWeek) => {
+        const updated = { ...weeklyRoutines };
+        delete updated[day];
+        setWeeklyRoutines(updated);
+        localStorage.setItem("weeklyRoutines", JSON.stringify(updated));
+        setDeleteConfirmDay(null);
+    };
+
+    // Long-press handlers for day buttons
+    const longPressTriggeredRef = useRef(false);
+
+    const handleDayPointerDown = (day: DayOfWeek) => {
+        const hasRoutine = weeklyRoutines[day] && weeklyRoutines[day]!.length > 0;
+        if (!hasRoutine) return;
+        longPressTriggeredRef.current = false;
+        longPressTimerRef.current = setTimeout(() => {
+            setDeleteConfirmDay(day);
+            longPressTriggeredRef.current = true;
+        }, 500);
+    };
+
+    const handleDayPointerUp = () => {
+        if (longPressTimerRef.current) {
+            clearTimeout(longPressTimerRef.current);
+            longPressTimerRef.current = null;
+        }
     };
 
     // Load preloaded exercises from Archive (EDIT button) OR restore previous session
@@ -153,14 +188,24 @@ export default function BuilderScreen() {
     };
 
     const handleStartSession = () => {
+        // Check if HIIT Session is in the queue
+        const hiitExercise = selectedExercises.find(ex => ex.id === "hiit_session");
+        if (hiitExercise) {
+            // Route to dedicated HIIT screen
+            localStorage.setItem("hiitMode", "true");
+            router.push("/active-hiit");
+            return;
+        }
+
         // Transform exercises for Active screen format (add sets, weight, reps, muscle)
         const workoutExercises = selectedExercises.map((ex, idx) => ({
             id: idx + 1,
             name: ex.name.toUpperCase(),
             muscle: ex.muscle, // Include muscle for heatmap tracking
-            sets: 3, // Default sets
-            weight: "0", // User will adjust
-            reps: "10", // Default reps
+            isCardio: ex.muscle === "CARDIO", // Flag cardio exercises
+            sets: ex.savedSets || (ex.muscle === "CARDIO" ? 1 : 3), // Cardio default: 1 "set"
+            weight: ex.savedWeight || "0",
+            reps: ex.savedReps || "10",
         }));
 
         // Save workout and superset mode to localStorage
@@ -230,39 +275,67 @@ export default function BuilderScreen() {
                             const isToday = getTodayKey() === day.key;
 
                             return (
-                                <motion.button
+                                <button
                                     key={day.key}
-                                    onClick={() => loadRoutine(day.key)}
-                                    whileHover={hasRoutine ? { scale: 1.05 } : {}}
-                                    whileTap={hasRoutine ? { scale: 0.95 } : {}}
-                                    className="flex items-center justify-center"
+                                    onClick={() => {
+                                        if (longPressTriggeredRef.current) {
+                                            // Skip the click that fires right after long-press
+                                            longPressTriggeredRef.current = false;
+                                            return;
+                                        }
+                                        if (deleteConfirmDay === day.key) {
+                                            // Tap on ✕ day = delete
+                                            deleteRoutineFromDay(day.key);
+                                            return;
+                                        }
+                                        if (deleteConfirmDay) {
+                                            // Tap elsewhere = cancel
+                                            setDeleteConfirmDay(null);
+                                            return;
+                                        }
+                                        loadRoutine(day.key);
+                                    }}
+                                    onPointerDown={() => handleDayPointerDown(day.key)}
+                                    onPointerUp={handleDayPointerUp}
+                                    onPointerLeave={handleDayPointerUp}
+                                    className="flex flex-col items-center justify-center"
                                     style={{
                                         width: 42,
                                         height: 42,
                                         borderRadius: 6,
-                                        backgroundColor: isToday && hasRoutine ? "#0A0A0A" : "#1A1A1A",
-                                        border: hasRoutine
-                                            ? isToday
-                                                ? "2px solid #CCFF00"
-                                                : "1px solid #CCFF00"
-                                            : "1px solid #333333",
+                                        backgroundColor: deleteConfirmDay === day.key
+                                            ? "rgba(255, 107, 107, 0.15)"
+                                            : isToday && hasRoutine ? "#0A0A0A" : "#1A1A1A",
+                                        border: deleteConfirmDay === day.key
+                                            ? "1px solid #FF6B6B"
+                                            : hasRoutine
+                                                ? isToday
+                                                    ? "2px solid #CCFF00"
+                                                    : "1px solid #CCFF00"
+                                                : "1px solid #333333",
                                         cursor: hasRoutine ? "pointer" : "default",
                                         opacity: hasRoutine ? 1 : 0.6,
+                                        position: "relative",
+                                        transition: "background-color 0.15s ease, border-color 0.15s ease",
                                     }}
                                 >
                                     <span
                                         style={{
                                             fontFamily: "'Rubik Mono One', monospace",
                                             fontSize: 14,
-                                            color: hasRoutine ? "#CCFF00" : "#555555",
+                                            color: deleteConfirmDay === day.key
+                                                ? "#FF6B6B"
+                                                : hasRoutine ? "#CCFF00" : "#555555",
+                                            transition: "color 0.15s ease",
                                         }}
                                     >
-                                        {day.label}
+                                        {deleteConfirmDay === day.key ? "✕" : day.label}
                                     </span>
-                                </motion.button>
+                                </button>
                             );
                         })}
                     </div>
+
                 </motion.div>
 
                 <AnimatePresence>
@@ -277,7 +350,7 @@ export default function BuilderScreen() {
                                 left: 24,
                                 top: 160,
                                 width: 345,
-                                padding: "8px 12px",
+                                padding: "10px 16px",
                                 backgroundColor: "rgba(204, 255, 0, 0.1)",
                                 border: "1px solid rgba(204, 255, 0, 0.3)",
                                 borderRadius: 6,
@@ -773,7 +846,7 @@ export default function BuilderScreen() {
                                     letterSpacing: 2,
                                 }}
                             >
-                                START_SESSION →
+                                START_SESSION <span style={{ display: 'inline-block', transform: 'translateY(-1px)', marginLeft: 4 }}>→</span>
                             </span>
                         </motion.div>
                     ) : (

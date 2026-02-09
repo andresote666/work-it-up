@@ -28,6 +28,15 @@ interface WorkoutHistoryEntry {
     muscles: string[];
     volume: number;
     exerciseDetails: ExerciseDetail[];
+    isCardio?: boolean;
+    isHIIT?: boolean;
+    hiitDetails?: {
+        rounds: number;
+        totalRounds: number;
+        workTime: number;
+        restTime: number;
+        totalDuration: number;
+    };
 }
 
 // Format duration from seconds to readable string
@@ -51,7 +60,7 @@ const getPrimaryMuscle = (muscles: string[]): string => {
     if (muscles.length === 0) return "GENERAL";
     // Count occurrences if there are multiple
     const muscleMap: Record<string, number> = {
-        CHEST: 0, BACK: 0, LEGS: 0, SHOULDERS: 0, ARMS: 0, CORE: 0
+        CHEST: 0, BACK: 0, LEGS: 0, SHOULDERS: 0, ARMS: 0, CORE: 0, CARDIO: 0
     };
     muscles.forEach(m => { if (muscleMap[m] !== undefined) muscleMap[m]++; });
     const sorted = Object.entries(muscleMap).sort((a, b) => b[1] - a[1]);
@@ -110,6 +119,7 @@ export default function ArchiveScreen() {
     const [saveRoutineModalOpen, setSaveRoutineModalOpen] = useState(false);
     const [workoutToSave, setWorkoutToSave] = useState<WorkoutHistoryEntry | null>(null);
     const [weeklyRoutines, setWeeklyRoutines] = useState<WeeklyRoutines>({});
+    const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
     // Load workout history from localStorage
     useEffect(() => {
@@ -179,6 +189,24 @@ export default function ArchiveScreen() {
 
         localStorage.setItem("builderPreload", JSON.stringify(selectedExercises));
         window.location.href = "/builder";
+    };
+
+    // DELETE: Remove individual workout from history
+    const handleDeleteWorkout = (workoutId: number, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (deleteConfirmId === workoutId) {
+            // Second tap = confirm delete
+            const updatedHistory = workoutHistory.filter(w => w.id !== workoutId);
+            setWorkoutHistory(updatedHistory);
+            localStorage.setItem("workoutHistory", JSON.stringify(updatedHistory));
+            setDeleteConfirmId(null);
+            if (expandedId === workoutId) setExpandedId(null);
+        } else {
+            // First tap = show confirm
+            setDeleteConfirmId(workoutId);
+            // Auto-dismiss after 3 seconds
+            setTimeout(() => setDeleteConfirmId(prev => prev === workoutId ? null : prev), 3000);
+        }
     };
 
     // SAVE AS ROUTINE: Open modal to save workout to a day
@@ -431,32 +459,36 @@ export default function ArchiveScreen() {
                     className="absolute flex items-center"
                     style={{ left: 24, top: 230, width: 345, gap: 8 }}
                 >
-                    {filterCategories.map((category) => (
-                        <motion.button
-                            key={category}
-                            onClick={() => setActiveFilter(category)}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            style={{
-                                padding: "6px 12px",
-                                borderRadius: 4,
-                                border: "none",
-                                backgroundColor: activeFilter === category ? "#CCFF00" : "#1A1A1A",
-                                cursor: "pointer",
-                            }}
-                        >
-                            <span
+                    {filterCategories.map((category) => {
+                        const isCardioFilter = category === "CARDIO";
+                        const isActive = activeFilter === category;
+                        return (
+                            <motion.button
+                                key={category}
+                                onClick={() => setActiveFilter(category)}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 style={{
-                                    fontFamily: "'Chakra Petch', sans-serif",
-                                    fontSize: 10,
-                                    color: activeFilter === category ? "#000000" : "#666666",
-                                    letterSpacing: 1,
+                                    padding: "6px 12px",
+                                    borderRadius: 4,
+                                    border: isActive ? "none" : isCardioFilter ? "1px solid rgba(0, 229, 255, 0.3)" : "none",
+                                    backgroundColor: isActive ? (isCardioFilter ? "#00E5FF" : "#CCFF00") : "#1A1A1A",
+                                    cursor: "pointer",
                                 }}
                             >
-                                {category}
-                            </span>
-                        </motion.button>
-                    ))}
+                                <span
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 10,
+                                        color: isActive ? "#000000" : isCardioFilter ? "#00E5FF" : "#666666",
+                                        letterSpacing: 1,
+                                    }}
+                                >
+                                    {isCardioFilter ? "⚡ CARDIO" : category}
+                                </span>
+                            </motion.button>
+                        );
+                    })}
                 </motion.div>
 
                 {/* Logs Frame at x:24 y:270 (moved down for filters) */}
@@ -559,7 +591,9 @@ export default function ArchiveScreen() {
                                     transition={{ delay: 0.4 + index * 0.1, duration: 0.3 }}
                                     style={{
                                         width: 4,
-                                        backgroundColor: index === 0 ? "#CCFF00" : "#333333",
+                                        backgroundColor: (log as { isCardio?: boolean }).isCardio
+                                            ? "#00E5FF"
+                                            : index === 0 ? "#CCFF00" : "#333333",
                                         borderRadius: 2,
                                     }}
                                 />
@@ -581,7 +615,11 @@ export default function ArchiveScreen() {
                                             color: "#555555",
                                         }}
                                     >
-                                        VOL: {log.volume} • {formatDuration(log.duration)} • {log.exerciseCount} EX
+                                        {(log as { isHIIT?: boolean }).isHIIT
+                                            ? `⚡ HIIT • ${formatDuration(log.duration)} • ${(log as { hiitDetails?: { rounds: number } }).hiitDetails?.rounds || 0} RDS`
+                                            : (log as { isCardio?: boolean }).isCardio
+                                                ? `🏃 CARDIO • ${formatDuration(log.duration)}`
+                                                : `VOL: ${log.volume} • ${formatDuration(log.duration)} • ${log.exerciseCount} EX`}
                                     </span>
                                 </div>
                                 {/* Expand Indicator */}
@@ -636,10 +674,10 @@ export default function ArchiveScreen() {
                                                         style={{
                                                             fontFamily: "'Chakra Petch', sans-serif",
                                                             fontSize: 10,
-                                                            color: "#CCFF00",
+                                                            color: ex.muscle === "CARDIO" ? "#00E5FF" : "#CCFF00",
                                                         }}
                                                     >
-                                                        {ex.sets}×{ex.reps}
+                                                        {ex.muscle === "CARDIO" ? `${ex.weight}min` : `${ex.sets}×${ex.reps}`}
                                                     </span>
                                                     <span
                                                         style={{
@@ -648,7 +686,7 @@ export default function ArchiveScreen() {
                                                             color: "#555555",
                                                         }}
                                                     >
-                                                        {ex.weight}kg
+                                                        {ex.muscle === "CARDIO" ? `${ex.reps}km` : `${ex.weight}kg`}
                                                     </span>
                                                 </div>
                                             </motion.div>
@@ -702,21 +740,21 @@ export default function ArchiveScreen() {
                                                 </span>
                                             </motion.button>
 
-                                            {/* EDIT Button - Secondary Action */}
+                                            {/* DELETE Button - Replaces EDIT */}
                                             <motion.button
-                                                onClick={(e) => handleEdit(log, e)}
+                                                onClick={(e) => handleDeleteWorkout(log.id, e)}
                                                 whileHover={{
                                                     scale: 1.02,
-                                                    backgroundColor: "#2a2a2a",
-                                                    borderColor: "#888888",
+                                                    backgroundColor: deleteConfirmId === log.id ? "#3a1a1a" : "#2a2a2a",
+                                                    borderColor: deleteConfirmId === log.id ? "#FF6B6B" : "#888888",
                                                 }}
                                                 whileTap={{ scale: 0.98 }}
                                                 className="flex items-center justify-center"
                                                 style={{
                                                     flex: 1,
                                                     height: 36,
-                                                    backgroundColor: "#1a1a1a",
-                                                    border: "1px solid #333333",
+                                                    backgroundColor: deleteConfirmId === log.id ? "#2a1515" : "#1a1a1a",
+                                                    border: deleteConfirmId === log.id ? "1px solid #FF6B6B" : "1px solid #333333",
                                                     borderRadius: 4,
                                                     cursor: "pointer",
                                                     gap: 8,
@@ -726,20 +764,20 @@ export default function ArchiveScreen() {
                                                 <span
                                                     style={{
                                                         fontSize: 10,
-                                                        color: "#666666",
+                                                        color: deleteConfirmId === log.id ? "#FF6B6B" : "#666666",
                                                     }}
                                                 >
-                                                    ✎
+                                                    🗑
                                                 </span>
                                                 <span
                                                     style={{
                                                         fontFamily: "'Chakra Petch', sans-serif",
                                                         fontSize: 11,
-                                                        color: "#888888",
+                                                        color: deleteConfirmId === log.id ? "#FF6B6B" : "#888888",
                                                         letterSpacing: 1,
                                                     }}
                                                 >
-                                                    EDIT
+                                                    {deleteConfirmId === log.id ? "CONFIRM?" : "DELETE"}
                                                 </span>
                                             </motion.button>
 

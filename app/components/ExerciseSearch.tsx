@@ -192,34 +192,39 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                             className="flex flex-wrap"
                             style={{ gap: 6, marginTop: 6 }}
                         >
-                            {muscles.map((muscle) => (
-                                <motion.button
-                                    key={muscle}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => setSelectedMuscle(
-                                        selectedMuscle === muscle ? null : muscle
-                                    )}
-                                    style={{
-                                        padding: "5px 10px",
-                                        backgroundColor: selectedMuscle === muscle ? "#CCFF00" : "#1A1A1A",
-                                        border: selectedMuscle === muscle ? "none" : "1px solid #333333",
-                                        borderRadius: 3,
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    <span
+                            {muscles.map((muscle) => {
+                                const isCardio = muscle === "CARDIO";
+                                const isSelected = selectedMuscle === muscle;
+                                const accentColor = isCardio ? "#00E5FF" : "#CCFF00";
+                                return (
+                                    <motion.button
+                                        key={muscle}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => setSelectedMuscle(
+                                            selectedMuscle === muscle ? null : muscle
+                                        )}
                                         style={{
-                                            fontFamily: "'Chakra Petch', sans-serif",
-                                            fontSize: 9,
-                                            color: selectedMuscle === muscle ? "#000000" : "#888888",
-                                            letterSpacing: 1,
+                                            padding: "5px 10px",
+                                            backgroundColor: isSelected ? accentColor : "#1A1A1A",
+                                            border: isSelected ? "none" : isCardio ? "1px solid rgba(0, 229, 255, 0.4)" : "1px solid #333333",
+                                            borderRadius: 3,
+                                            cursor: "pointer",
                                         }}
                                     >
-                                        {muscle}
-                                    </span>
-                                </motion.button>
-                            ))}
+                                        <span
+                                            style={{
+                                                fontFamily: "'Chakra Petch', sans-serif",
+                                                fontSize: 9,
+                                                color: isSelected ? "#000000" : isCardio ? "#00E5FF" : "#888888",
+                                                letterSpacing: 1,
+                                            }}
+                                        >
+                                            {isCardio ? "⚡ CARDIO" : muscle}
+                                        </span>
+                                    </motion.button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -395,7 +400,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                                 }}
                                             />
                                         ) : (
-                                            <span style={{ fontSize: 16 }}>🏋️</span>
+                                            <span style={{ fontSize: 16 }}>{exercise.muscle === "CARDIO" ? "🏃" : "🏋️"}</span>
                                         )}
                                     </div>
                                     {/* Exercise Name */}
@@ -422,7 +427,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                     <span
                                         style={{
                                             padding: "3px 6px",
-                                            backgroundColor: "#CCFF00",
+                                            backgroundColor: exercise.muscle === "CARDIO" ? "#00E5FF" : "#CCFF00",
                                             borderRadius: 3,
                                             fontFamily: "'Chakra Petch', sans-serif",
                                             fontSize: 8,

@@ -37,6 +37,8 @@ interface WorkoutHistoryEntry {
     totalSets: number;
     muscles: string[];
     volume: number;
+    isCardio?: boolean;
+    isHIIT?: boolean;
 }
 
 interface DayData {
@@ -120,6 +122,7 @@ export default function LabScreen() {
     const [workoutHistory, setWorkoutHistory] = useState<WorkoutHistoryEntry[]>([]);
     const [weeklyData, setWeeklyData] = useState<DayData[]>([]);
     const [energyLevel, setEnergyLevel] = useState(5);
+    const [cardioStats, setCardioStats] = useState({ totalDuration: 0, hiitSessions: 0, totalSessions: 0 });
 
     // Load workout data from localStorage on mount
     useEffect(() => {
@@ -153,6 +156,16 @@ export default function LabScreen() {
         // Calculate dynamic data
         setWeeklyData(calculateWeeklyData(history));
         setEnergyLevel(calculateEnergyLevel(history, storedTime));
+
+        // Calculate cardio stats from history
+        const cardioEntries = history.filter((e: WorkoutHistoryEntry) => e.isCardio);
+        const hiitEntries = history.filter((e: WorkoutHistoryEntry) => e.isHIIT);
+        const totalCardioDuration = cardioEntries.reduce((sum: number, e: WorkoutHistoryEntry) => sum + (e.duration || 0), 0);
+        setCardioStats({
+            totalDuration: totalCardioDuration,
+            hiitSessions: hiitEntries.length,
+            totalSessions: cardioEntries.length,
+        });
     }, []);
 
     const recommendation = energyRecommendations.find(r => r.level === energyLevel)?.text || "";
@@ -381,6 +394,66 @@ export default function LabScreen() {
                         >
                             {recommendation}
                         </motion.span>
+                    </motion.div>
+
+                    {/* CARDIO_LOG Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.6, duration: 0.5 }}
+                        className="flex flex-col"
+                        style={{ marginTop: 24, width: "100%", gap: 10 }}
+                    >
+                        <span
+                            style={{
+                                fontFamily: "'Chakra Petch', sans-serif",
+                                fontSize: 10,
+                                color: "#00E5FF",
+                                letterSpacing: 1.5,
+                            }}
+                        >
+                            ⚡ CARDIO_LOG
+                        </span>
+                        <div className="flex" style={{ gap: 8 }}>
+                            {[
+                                { label: "SESSIONS", value: cardioStats.totalSessions.toString(), color: "#00E5FF" },
+                                { label: "HIIT", value: cardioStats.hiitSessions.toString(), color: "#FF9800" },
+                                { label: "DURATION", value: `${Math.floor(cardioStats.totalDuration / 60)}m`, color: "#00E5FF" },
+                            ].map((stat) => (
+                                <div
+                                    key={stat.label}
+                                    className="flex flex-col items-center justify-center"
+                                    style={{
+                                        flex: 1,
+                                        padding: "10px 0",
+                                        backgroundColor: "#111111",
+                                        border: "1px solid #1A1A1A",
+                                        borderRadius: 4,
+                                    }}
+                                >
+                                    <span
+                                        style={{
+                                            fontFamily: "'Rubik Mono One', monospace",
+                                            fontSize: 18,
+                                            color: stat.color,
+                                        }}
+                                    >
+                                        {stat.value}
+                                    </span>
+                                    <span
+                                        style={{
+                                            fontFamily: "'Chakra Petch', sans-serif",
+                                            fontSize: 8,
+                                            color: "#555555",
+                                            letterSpacing: 1,
+                                            marginTop: 2,
+                                        }}
+                                    >
+                                        {stat.label}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </motion.div>
                 </div>
 

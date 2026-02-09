@@ -581,6 +581,54 @@
             "name": "WOOD CHOPS",
             "muscle": "CORE",
             "equipment": "CABLE"
+        },
+        {
+            "id": "treadmill",
+            "name": "TREADMILL",
+            "muscle": "CARDIO",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "stationary_bike",
+            "name": "STATIONARY BIKE",
+            "muscle": "CARDIO",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "elliptical",
+            "name": "ELLIPTICAL",
+            "muscle": "CARDIO",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "rowing_machine",
+            "name": "ROWING MACHINE",
+            "muscle": "CARDIO",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "jump_rope",
+            "name": "JUMP ROPE",
+            "muscle": "CARDIO",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "stair_climber",
+            "name": "STAIR CLIMBER",
+            "muscle": "CARDIO",
+            "equipment": "MACHINE"
+        },
+        {
+            "id": "swimming",
+            "name": "SWIMMING",
+            "muscle": "CARDIO",
+            "equipment": "BODYWEIGHT"
+        },
+        {
+            "id": "hiit_session",
+            "name": "HIIT SESSION",
+            "muscle": "CARDIO",
+            "equipment": "BODYWEIGHT"
         }
     ],
     "muscles": [
@@ -589,7 +637,8 @@
         "LEGS",
         "SHOULDERS",
         "ARMS",
-        "CORE"
+        "CORE",
+        "CARDIO"
     ],
     "equipment": [
         "BARBELL",

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import DevNavigation from "../components/DevNavigation";
 
@@ -23,6 +23,7 @@ interface WorkoutExercise {
     id: number;
     name: string;
     muscle?: string; // For heatmap tracking
+    isCardio?: boolean; // Cardio exercise flag
     sets: number;
     weight: string;
     reps: string;
@@ -136,6 +137,9 @@ export default function ActiveScreen() {
     // Real-time session timer using persisted start time
     // This ensures the timer continues correctly even when app goes to background
     useEffect(() => {
+        // Don't run timer if celebration is showing (workout complete)
+        if (showCelebration) return;
+
         // Get or set session start time
         let startTime: number;
         const storedStartTime = localStorage.getItem("sessionStartTime");
@@ -159,7 +163,7 @@ export default function ActiveScreen() {
         const interval = setInterval(updateElapsed, 1000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [showCelebration]);
 
     // Screen Wake Lock reference
     const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null);
@@ -190,11 +194,42 @@ export default function ActiveScreen() {
         }
     };
 
-    // Rest timer countdown with wake lock
+    // Web Audio API beep for rest countdown
+    const audioContextRef = useRef<AudioContext | null>(null);
+
+    const playBeep = (frequency: number, duration: number) => {
+        try {
+            if (!audioContextRef.current) {
+                audioContextRef.current = new AudioContext();
+            }
+            const ctx = audioContextRef.current;
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'square';
+            gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration / 1000);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + duration / 1000);
+        } catch {
+            // Audio not available — fail silently
+        }
+    };
+
+    // Rest timer countdown with wake lock + sound alerts
     useEffect(() => {
         if (restTimer > 0) {
             // Keep screen on during rest
             requestWakeLock();
+
+            // Play countdown sounds in last 5 seconds
+            if (restTimer <= 5 && restTimer > 1) {
+                playBeep(800, 80); // tick
+            } else if (restTimer === 1) {
+                playBeep(1200, 150); // final GO beep
+            }
 
             const countdown = setInterval(() => {
                 setRestTimer(prev => {
@@ -411,6 +446,37 @@ export default function ActiveScreen() {
 
                 localStorage.setItem("workoutHistory", JSON.stringify(history));
                 localStorage.setItem("lastWorkoutTime", workoutEntry.date);
+
+                // Clear session start time so next session starts fresh
+                localStorage.removeItem("sessionStartTime");
+
+                // Update weekly routine with actual performed values for today
+                try {
+                    const storedRoutines = localStorage.getItem("weeklyRoutines");
+                    if (storedRoutines) {
+                        const routines = JSON.parse(storedRoutines);
+                        const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+                        const todayKey = days[new Date().getDay()];
+                        if (routines[todayKey] && routines[todayKey].length > 0) {
+                            // Update each exercise's saved data with what was actually performed
+                            routines[todayKey] = routines[todayKey].map((routineEx: { name: string; savedSets?: number; savedWeight?: string; savedReps?: string }) => {
+                                const performed = exercises.find(ex => ex.name.toUpperCase() === routineEx.name.toUpperCase());
+                                if (performed) {
+                                    return {
+                                        ...routineEx,
+                                        savedSets: performed.sets,
+                                        savedWeight: performed.weight,
+                                        savedReps: performed.reps,
+                                    };
+                                }
+                                return routineEx;
+                            });
+                            localStorage.setItem("weeklyRoutines", JSON.stringify(routines));
+                        }
+                    }
+                } catch {
+                    // Fail silently if routine update fails
+                }
 
                 // Show celebration then navigate
                 setShowCelebration(true);
@@ -801,7 +867,7 @@ export default function ActiveScreen() {
 
                         {/* Input Row */}
                         <div className="flex" style={{ gap: 16, marginBottom: 24 }}>
-                            {/* Weight Input */}
+                            {/* Weight/Duration Input */}
                             <div
                                 className="flex flex-col items-center justify-center"
                                 style={{
@@ -823,7 +889,7 @@ export default function ActiveScreen() {
                                         textAlign: "center",
                                         fontFamily: "'Rubik Mono One', monospace",
                                         fontSize: 32,
-                                        color: "#FFFFFF",
+                                        color: activeExercise.isCardio ? "#00E5FF" : "#FFFFFF",
                                     }}
                                 />
                                 <span
@@ -833,10 +899,10 @@ export default function ActiveScreen() {
                                         color: "#555555",
                                     }}
                                 >
-                                    KG
+                                    {activeExercise.isCardio ? "MIN" : "KG"}
                                 </span>
                             </div>
-                            {/* Reps Input */}
+                            {/* Reps/Distance Input */}
                             <div
                                 className="flex flex-col items-center justify-center"
                                 style={{
@@ -858,7 +924,7 @@ export default function ActiveScreen() {
                                         textAlign: "center",
                                         fontFamily: "'Rubik Mono One', monospace",
                                         fontSize: 32,
-                                        color: "#CCFF00",
+                                        color: activeExercise.isCardio ? "#00E5FF" : "#CCFF00",
                                     }}
                                 />
                                 <span
@@ -868,7 +934,7 @@ export default function ActiveScreen() {
                                         color: "#555555",
                                     }}
                                 >
-                                    REPS
+                                    {activeExercise.isCardio ? "KM" : "REPS"}
                                 </span>
                             </div>
                         </div>
@@ -893,9 +959,87 @@ export default function ActiveScreen() {
                                     color: "#000000",
                                 }}
                             >
-                                LOG SET ▶
+                                {activeExercise.isCardio ? "LOG CARDIO ⚡" : "LOG SET ▶"}
                             </span>
                         </motion.div>
+
+                        {/* SET Controls: − / + */}
+                        <div className="flex items-center" style={{ gap: 8, marginTop: 8 }}>
+                            <motion.button
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                onClick={() => {
+                                    if (exercises[currentIndex].sets <= 1) return;
+                                    const newExercises = [...exercises];
+                                    newExercises[currentIndex] = {
+                                        ...newExercises[currentIndex],
+                                        sets: newExercises[currentIndex].sets - 1,
+                                    };
+                                    setExercises(newExercises);
+                                }}
+                                className="flex items-center justify-center cursor-pointer"
+                                style={{
+                                    flex: 1,
+                                    height: 36,
+                                    background: "none",
+                                    border: "1px solid #333333",
+                                    borderRadius: 4,
+                                    opacity: exercises[currentIndex].sets <= 1 ? 0.3 : 1,
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 14,
+                                        color: "#888888",
+                                    }}
+                                >
+                                    −
+                                </span>
+                            </motion.button>
+                            <span
+                                style={{
+                                    fontFamily: "'Chakra Petch', sans-serif",
+                                    fontSize: 11,
+                                    color: "#555555",
+                                    letterSpacing: 1,
+                                    minWidth: 40,
+                                    textAlign: "center",
+                                }}
+                            >
+                                SETS
+                            </span>
+                            <motion.button
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                onClick={() => {
+                                    const newExercises = [...exercises];
+                                    newExercises[currentIndex] = {
+                                        ...newExercises[currentIndex],
+                                        sets: newExercises[currentIndex].sets + 1,
+                                    };
+                                    setExercises(newExercises);
+                                }}
+                                className="flex items-center justify-center cursor-pointer"
+                                style={{
+                                    flex: 1,
+                                    height: 36,
+                                    background: "none",
+                                    border: "1px solid #333333",
+                                    borderRadius: 4,
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        fontFamily: "'Chakra Petch', sans-serif",
+                                        fontSize: 14,
+                                        color: "#888888",
+                                    }}
+                                >
+                                    +
+                                </span>
+                            </motion.button>
+                        </div>
                     </div>
 
                     {/* histContext - now inside focusCard for proper flow */}
