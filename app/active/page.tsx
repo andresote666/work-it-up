@@ -934,7 +934,15 @@ export default function ActiveScreen() {
                                         color: "#555555",
                                     }}
                                 >
-                                    {activeExercise.isCardio ? "KM" : "REPS"}
+                                    {activeExercise.isCardio
+                                        ? (() => {
+                                            const n = activeExercise.name.toUpperCase();
+                                            if (n.includes("JUMP ROPE")) return "JUMPS";
+                                            if (n.includes("SWIMMING")) return "LAPS";
+                                            if (n.includes("STAIR")) return "STEPS";
+                                            return "KM";
+                                        })()
+                                        : "REPS"}
                                 </span>
                             </div>
                         </div>

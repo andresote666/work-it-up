@@ -44,6 +44,9 @@ export default function ActiveHIITScreen() {
     // Audio context ref
     const audioCtxRef = useRef<AudioContext | null>(null);
 
+    // Wake lock ref
+    const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+
     // Timer ref
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const startTimeRef = useRef<number>(0);
@@ -73,6 +76,51 @@ export default function ActiveHIITScreen() {
         playBeep(400, 200);
         setTimeout(() => playBeep(400, 200), 250);
     }, [playBeep]);
+
+    // Speak a voice announcement
+    const speakVoice = useCallback((text: string) => {
+        try {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.2;
+                utterance.pitch = 1.1;
+                utterance.volume = 1;
+                utterance.lang = 'en-US';
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            }
+        } catch {
+            // Silent fail
+        }
+    }, []);
+
+    // Wake Lock: keep screen on
+    const requestWakeLock = useCallback(async () => {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLockRef.current = await navigator.wakeLock.request('screen');
+            }
+        } catch {
+            // Silent fail — user may have denied or not supported
+        }
+    }, []);
+
+    const releaseWakeLock = useCallback(() => {
+        if (wakeLockRef.current) {
+            wakeLockRef.current.release();
+            wakeLockRef.current = null;
+        }
+    }, []);
+
+    // Acquire wake lock when active, release on complete/unmount
+    useEffect(() => {
+        if (phase === "WORK" || phase === "REST" || phase === "COUNTDOWN") {
+            requestWakeLock();
+        } else if (phase === "COMPLETE" || phase === "SETUP") {
+            releaseWakeLock();
+        }
+        return () => releaseWakeLock();
+    }, [phase, requestWakeLock, releaseWakeLock]);
 
     // Total session time estimate
     const totalEstimate = rounds * workTime + (rounds - 1) * restTime;
@@ -143,6 +191,16 @@ export default function ActiveHIITScreen() {
             playBeep(800, 80);
         } else if (timeLeft === 1) {
             playBeep(1200, 150);
+            // Voice announcement for phase transition
+            if (phase === "WORK") {
+                if (currentRound >= rounds) {
+                    speakVoice("Done!");
+                } else {
+                    speakVoice("Rest!");
+                }
+            } else {
+                speakVoice("Go!");
+            }
         }
 
         const timer = setInterval(() => {

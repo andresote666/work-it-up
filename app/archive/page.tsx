@@ -471,7 +471,7 @@ export default function ArchiveScreen() {
                                 style={{
                                     padding: "6px 12px",
                                     borderRadius: 4,
-                                    border: isActive ? "none" : isCardioFilter ? "1px solid rgba(0, 229, 255, 0.3)" : "none",
+                                    border: "none",
                                     backgroundColor: isActive ? (isCardioFilter ? "#00E5FF" : "#CCFF00") : "#1A1A1A",
                                     cursor: "pointer",
                                 }}
@@ -480,11 +480,11 @@ export default function ArchiveScreen() {
                                     style={{
                                         fontFamily: "'Chakra Petch', sans-serif",
                                         fontSize: 10,
-                                        color: isActive ? "#000000" : isCardioFilter ? "#00E5FF" : "#666666",
+                                        color: isActive ? "#000000" : "#666666",
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    {isCardioFilter ? "⚡ CARDIO" : category}
+                                    {category}
                                 </span>
                             </motion.button>
                         );

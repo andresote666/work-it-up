@@ -227,6 +227,11 @@ export default function BuilderScreen() {
                     borderRadius: 0,
                     backgroundColor: "#0A0A0A",
                 }}
+                onClick={() => {
+                    if (deleteConfirmDay) {
+                        setDeleteConfirmDay(null);
+                    }
+                }}
             >
                 {/* Dev Navigation */}
                 <DevNavigation />
@@ -277,7 +282,8 @@ export default function BuilderScreen() {
                             return (
                                 <button
                                     key={day.key}
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
                                         if (longPressTriggeredRef.current) {
                                             // Skip the click that fires right after long-press
                                             longPressTriggeredRef.current = false;
@@ -289,7 +295,7 @@ export default function BuilderScreen() {
                                             return;
                                         }
                                         if (deleteConfirmDay) {
-                                            // Tap elsewhere = cancel
+                                            // Tap on another day = cancel
                                             setDeleteConfirmDay(null);
                                             return;
                                         }
