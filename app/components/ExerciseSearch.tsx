@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import exerciseData from "../data/exercises.json";
 import { fetchExerciseGif } from "../lib/musclewiki";
+import { t, translateExercise, translateMuscle, translateEquipment } from "../lib/i18n";
 
 interface Exercise {
     id: string;
@@ -34,7 +35,8 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
     const filteredExercises = useMemo(() => {
         return exercises.filter((ex) => {
             const matchesSearch = searchQuery === "" ||
-                ex.name.toLowerCase().includes(searchQuery.toLowerCase());
+                ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                translateExercise(ex.name).toLowerCase().includes(searchQuery.toLowerCase());
             const matchesMuscle = !selectedMuscle || ex.muscle === selectedMuscle;
             const matchesEquipment = !selectedEquipment || ex.equipment === selectedEquipment;
             return matchesSearch && matchesMuscle && matchesEquipment;
@@ -95,7 +97,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                     color: "#FFFFFF",
                                 }}
                             >
-                                EXERCISE_DB
+                                {t('EXERCISE_DB')}
                             </span>
                             <span
                                 style={{
@@ -104,7 +106,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                     color: "#555555",
                                 }}
                             >
-                                // SELECT_MOVEMENT
+                                // {t('SEARCH_EXERCISES')}
                             </span>
                         </div>
                         <motion.button
@@ -146,7 +148,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="SEARCH_EXERCISE..."
+                                placeholder={t('SEARCH_PLACEHOLDER')}
                                 style={{
                                     flex: 1,
                                     backgroundColor: "transparent",
@@ -186,7 +188,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                 letterSpacing: 1,
                             }}
                         >
-                            MUSCLE_GROUP
+                            {t('MUSCLE_MAP')}
                         </span>
                         <div
                             className="flex flex-wrap"
@@ -220,7 +222,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                                 letterSpacing: 1,
                                             }}
                                         >
-                                            {isCardio ? "⚡ CARDIO" : muscle}
+                                            {isCardio ? `⚡ ${t('CARDIO')}` : translateMuscle(muscle)}
                                         </span>
                                     </motion.button>
                                 );
@@ -238,7 +240,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                 letterSpacing: 1,
                             }}
                         >
-                            EQUIPMENT
+                            {t('EQUIPMENT')}
                         </span>
                         <div
                             className="flex flex-wrap"
@@ -268,7 +270,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                             letterSpacing: 1,
                                         }}
                                     >
-                                        {eq}
+                                        {translateEquipment(eq)}
                                     </span>
                                 </motion.button>
                             ))}
@@ -291,7 +293,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                 color: "#555555",
                             }}
                         >
-                            {filteredExercises.length} RESULTS
+                            {filteredExercises.length} {t('RESULTS')}
                         </span>
                         {(selectedMuscle || selectedEquipment || searchQuery) && (
                             <motion.button
@@ -306,7 +308,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                     color: "#CCFF00",
                                 }}
                             >
-                                CLEAR_ALL
+                                {t('CLEAR')}
                             </motion.button>
                         )}
                     </div>
@@ -415,7 +417,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                             flex: 1,
                                         }}
                                     >
-                                        {exercise.name}
+                                        {translateExercise(exercise.name)}
                                     </span>
                                 </div>
 
@@ -435,7 +437,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                             color: "#000000",
                                         }}
                                     >
-                                        {exercise.muscle}
+                                        {translateMuscle(exercise.muscle)}
                                     </span>
                                     <span
                                         style={{
@@ -466,7 +468,7 @@ export default function ExerciseSearch({ isOpen, onClose, onSelect }: ExerciseSe
                                 color: "#444444",
                             }}
                         >
-                            TAP_TO_ADD // ESC_TO_CLOSE
+                            {t('TAP_ADD')} // ESC
                         </span>
                     </div>
                 </motion.div>

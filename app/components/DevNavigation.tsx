@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { t } from "../lib/i18n";
 
 /**
  * DevNavigation - Development navigation component
@@ -10,12 +11,12 @@ import { motion } from "framer-motion";
  * Archive button centered in bottom navigation
  */
 
-// Main workflow screens (in order)
-const mainFlow = [
-    { path: "/", label: "HOME" },
-    { path: "/builder", label: "BUILDER" },
-    { path: "/active", label: "ACTIVE" },
-    { path: "/lab", label: "LAB" },
+// Main workflow screens (in order) — labels resolved at render time via t()
+const mainFlowPaths = [
+    { path: "/", labelKey: "HOME" },
+    { path: "/builder", labelKey: "NAV_BUILDER" },
+    { path: "/active", labelKey: "ACTIVE" },
+    { path: "/lab", labelKey: "NAV_LAB" },
 ];
 
 interface DevNavigationProps {
@@ -24,6 +25,9 @@ interface DevNavigationProps {
 
 export default function DevNavigation({ showArchiveButton = true }: DevNavigationProps) {
     const pathname = usePathname();
+
+    // Resolve labels at render time for i18n
+    const mainFlow = mainFlowPaths.map(s => ({ ...s, label: t(s.labelKey) }));
 
     // Find current screen index in main flow
     // Treat /active-hiit the same as /active for navigation purposes
@@ -103,7 +107,7 @@ export default function DevNavigation({ showArchiveButton = true }: DevNavigatio
                                 letterSpacing: 1.5,
                             }}
                         >
-                            ARCHIVE
+                            {t('ARCHIVE')}
                         </span>
                     </motion.div>
                 </Link>

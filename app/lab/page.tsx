@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import DevNavigation from "../components/DevNavigation";
 import BodyHeatmap from "../components/BodyHeatmap";
+import { t } from "../lib/i18n";
 
 /**
  * Screen 5: The Lab / WORKOUT_SCREEN5
@@ -196,7 +197,7 @@ export default function LabScreen() {
                             color: "#FFFFFF",
                         }}
                     >
-                        THE_LAB
+                        {t('THE_LAB')}
                     </span>
                     <span
                         style={{
@@ -206,7 +207,7 @@ export default function LabScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        // DIAGNOSTICS
+                        {t('DIAGNOSTICS')}
                     </span>
                 </div>
 
@@ -221,7 +222,7 @@ export default function LabScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        SYSTEM_HEATMAP
+                        {t('SYSTEM_HEATMAP')}
                     </span>
 
                     {/* Dynamic Heatmap Frame */}
@@ -258,7 +259,7 @@ export default function LabScreen() {
                                     letterSpacing: 0.5,
                                 }}
                             >
-                                LAST: {new Date(lastWorkoutTime).toLocaleDateString()}
+                                {t('LAST_LABEL')}: {new Date(lastWorkoutTime).toLocaleDateString()}
                             </motion.span>
                         )}
                     </motion.div>
@@ -274,7 +275,7 @@ export default function LabScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        WEEKLY_VOLUME
+                        {t('WEEKLY_VOLUME')}
                     </span>
 
                     {/* Volume Bars - Animated */}
@@ -342,7 +343,7 @@ export default function LabScreen() {
                                     letterSpacing: 1,
                                 }}
                             >
-                                ENERGY_LEVEL // AUTO_RECOVERY
+                                {t('ENERGY_LEVEL')} // {t('AUTO_RECOVERY')}
                             </span>
                             <motion.span
                                 key={energyPercent}
@@ -354,7 +355,7 @@ export default function LabScreen() {
                                     color: energyPercent >= 80 ? "#CCFF00" : energyPercent >= 50 ? "#FFAA00" : "#FF4444",
                                 }}
                             >
-                                {energyPercent}% // {energyStatus}
+                                {energyPercent}% // {t(energyPercent >= 80 ? 'CHARGED' : energyPercent >= 50 ? 'STABLE' : 'ENERGY_LOW')}
                             </motion.span>
                         </div>
                         {/* Automated Battery Bar - Display Only */}
@@ -412,13 +413,13 @@ export default function LabScreen() {
                                 letterSpacing: 1.5,
                             }}
                         >
-                            ⚡ CARDIO_LOG
+                            ⚡ {t('CARDIO_LOG')}
                         </span>
                         <div className="flex" style={{ gap: 8 }}>
                             {[
-                                { label: "SESSIONS", value: cardioStats.totalSessions.toString(), color: "#00E5FF" },
-                                { label: "HIIT", value: cardioStats.hiitSessions.toString(), color: "#FF9800" },
-                                { label: "DURATION", value: `${Math.floor(cardioStats.totalDuration / 60)}m`, color: "#00E5FF" },
+                                { label: t('SESSIONS_LABEL'), value: cardioStats.totalSessions.toString(), color: "#00E5FF" },
+                                { label: t('HIIT_LABEL'), value: cardioStats.hiitSessions.toString(), color: "#FF9800" },
+                                { label: t('DURATION'), value: `${Math.floor(cardioStats.totalDuration / 60)}m`, color: "#00E5FF" },
                             ].map((stat) => (
                                 <div
                                     key={stat.label}
@@ -468,7 +469,7 @@ export default function LabScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        &lt; RETURN_TO_BASE
+                        &lt; {t('RETURN_TO_BASE')}
                     </span>
                 </Link>
             </div>

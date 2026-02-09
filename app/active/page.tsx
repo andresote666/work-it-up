@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import DevNavigation from "../components/DevNavigation";
+import { t, translateExercise } from "../lib/i18n";
 
 /**
  * Screen 4: Active Session / WORKOUT_SCREEN4
@@ -286,7 +287,7 @@ export default function ActiveScreen() {
                             color: "#CCFF00",
                         }}
                     >
-                        LOADING...
+                        {t('LOADING')}
                     </motion.div>
                 </div>
             </main>
@@ -602,7 +603,7 @@ export default function ActiveScreen() {
                                 letterSpacing: 2,
                             }}
                         >
-                            REST_PERIOD
+                            {t('REST_PERIOD')}
                         </span>
                         {/* Skip button */}
                         <motion.div
@@ -625,7 +626,7 @@ export default function ActiveScreen() {
                                     letterSpacing: 1,
                                 }}
                             >
-                                SKIP →
+                                {t('SKIP_REST')}
                             </span>
                         </motion.div>
                     </motion.div>
@@ -677,7 +678,7 @@ export default function ActiveScreen() {
                                     textShadow: "0 0 20px rgba(204, 255, 0, 0.5)",
                                 }}
                             >
-                                CRUSHED IT!
+                                {t('CRUSHED')}
                             </span>
                             <motion.span
                                 initial={{ opacity: 0, y: 10 }}
@@ -691,7 +692,7 @@ export default function ActiveScreen() {
                                     marginTop: 8,
                                 }}
                             >
-                                WORKOUT COMPLETE
+                                {t('WORKOUT_COMPLETE')}
                             </motion.span>
                         </motion.div>
                     </motion.div>
@@ -710,7 +711,7 @@ export default function ActiveScreen() {
                             lineHeight: "32px",
                         }}
                     >
-                        ACTIVE
+                        {t('ACTIVE')}
                     </span>
                     <span
                         style={{
@@ -751,7 +752,7 @@ export default function ActiveScreen() {
                             marginTop: 2,
                         }}
                     >
-                        SESSION_TIME
+                        {t('SESSION_TIME')}
                     </span>
                 </div>
 
@@ -802,7 +803,7 @@ export default function ActiveScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        CURRENT_MOVE
+                        {t('CURRENT_MOVE')}
                     </span>
 
                     {/* focusCard - relative positioning for flow */}
@@ -851,7 +852,7 @@ export default function ActiveScreen() {
                                         color: "#FFFFFF",
                                     }}
                                 >
-                                    {activeExercise.name}
+                                    {translateExercise(activeExercise.name)}
                                 </span>
                             </div>
                             <span
@@ -861,7 +862,7 @@ export default function ActiveScreen() {
                                     color: "#CCFF00",
                                 }}
                             >
-                                SET {currentSet}/{activeExercise.sets}
+                                {t('SET')} {currentSet}/{activeExercise.sets}
                             </span>
                         </div>
 
@@ -899,7 +900,7 @@ export default function ActiveScreen() {
                                         color: "#555555",
                                     }}
                                 >
-                                    {activeExercise.isCardio ? "MIN" : "KG"}
+                                    {activeExercise.isCardio ? t('MIN') : t('KG')}
                                 </span>
                             </div>
                             {/* Reps/Distance Input */}
@@ -937,12 +938,12 @@ export default function ActiveScreen() {
                                     {activeExercise.isCardio
                                         ? (() => {
                                             const n = activeExercise.name.toUpperCase();
-                                            if (n.includes("JUMP ROPE")) return "JUMPS";
-                                            if (n.includes("SWIMMING")) return "LAPS";
-                                            if (n.includes("STAIR")) return "STEPS";
-                                            return "KM";
+                                            if (n.includes("JUMP ROPE")) return t('JUMPS');
+                                            if (n.includes("SWIMMING")) return t('LAPS');
+                                            if (n.includes("STAIR")) return t('STEPS');
+                                            return t('KM');
                                         })()
-                                        : "REPS"}
+                                        : t('REPS')}
                                 </span>
                             </div>
                         </div>
@@ -967,7 +968,7 @@ export default function ActiveScreen() {
                                     color: "#000000",
                                 }}
                             >
-                                {activeExercise.isCardio ? "LOG CARDIO ⚡" : "LOG SET ▶"}
+                                {activeExercise.isCardio ? t('LOG_CARDIO') : t('LOG_SET')}
                             </span>
                         </motion.div>
 
@@ -1015,7 +1016,7 @@ export default function ActiveScreen() {
                                     textAlign: "center",
                                 }}
                             >
-                                SETS
+                                {t('SETS')}
                             </span>
                             <motion.button
                                 whileHover={{ scale: 1.03 }}
@@ -1073,8 +1074,8 @@ export default function ActiveScreen() {
                                         }}
                                     >
                                         {hasHistory
-                                            ? `LAST_TIME: ${lastTimeData.weight}KG x ${lastTimeData.reps}`
-                                            : "LAST_TIME: FIRST_SESSION"}
+                                            ? `${t('LAST_TIME')}: ${lastTimeData.weight}${t('KG')} x ${lastTimeData.reps}`
+                                            : `${t('LAST_TIME')}: ${t('FIRST_SESSION')}`}
                                     </span>
                                     <span
                                         style={{
@@ -1085,7 +1086,7 @@ export default function ActiveScreen() {
                                             marginTop: 4,
                                         }}
                                     >
-                                        {hasHistory ? "// PREVIOUS_REF" : "// NO_HISTORY"}
+                                        {hasHistory ? t('PREVIOUS_REF') : t('NO_HISTORY')}
                                     </span>
                                 </div>
                                 {hasHistory && progressDiff !== 0 && (
@@ -1107,7 +1108,7 @@ export default function ActiveScreen() {
                                                 opacity: 0.7,
                                             }}
                                         >
-                                            {progressDiff > 0 ? "↑ PROGRESS" : progressDiff < 0 ? "↓ LIGHTER" : "SAME"}
+                                            {progressDiff > 0 ? `↑ ${t('PROGRESS')}` : progressDiff < 0 ? `↓ ${t('LIGHTER')}` : t('SAME_WEIGHT')}
                                         </span>
                                     </div>
                                 )}
@@ -1130,7 +1131,7 @@ export default function ActiveScreen() {
                                                 opacity: 0.7,
                                             }}
                                         >
-                                            SAME_WEIGHT
+                                            {t('SAME_WEIGHT')}
                                         </span>
                                     </div>
                                 )}
@@ -1150,7 +1151,7 @@ export default function ActiveScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        UP_NEXT
+                        {t('UP_NEXT')}
                     </span>
 
                     {/* queueList - relative positioning for flow */}
@@ -1176,7 +1177,7 @@ export default function ActiveScreen() {
                                         color: i === 0 ? "#FFFFFF" : "#555555",
                                     }}
                                 >
-                                    {ex.name}
+                                    {translateExercise(ex.name)}
                                 </span>
                                 <div className="flex items-center" style={{ gap: 16 }}>
                                     <span
@@ -1186,7 +1187,7 @@ export default function ActiveScreen() {
                                             color: "#555555",
                                         }}
                                     >
-                                        {ex.sets} SETS
+                                        {ex.sets} {t('SETS')}
                                     </span>
                                     <motion.span
                                         whileHover={{ scale: 1.1, color: "#FFFFFF" }}
@@ -1199,7 +1200,7 @@ export default function ActiveScreen() {
                                         }}
                                         onClick={() => handleSurf(i)}
                                     >
-                                        SURF ⇪
+                                        {t('SURF')}
                                     </motion.span>
                                 </div>
                             </div>
@@ -1228,7 +1229,7 @@ export default function ActiveScreen() {
                                 letterSpacing: 1,
                             }}
                         >
-            /// FINISH_SESSION
+                            {t('FINISH_SESSION')}
                         </motion.span>
                     </Link>
                 </div>{/* End of scrollable container */}

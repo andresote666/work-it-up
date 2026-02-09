@@ -7,6 +7,7 @@ import DevNavigation from "../components/DevNavigation";
 import ExerciseSearch from "../components/ExerciseSearch";
 import GifModal from "../components/GifModal";
 import { fetchExerciseGif } from "../lib/musclewiki";
+import { t, translateExercise, translateMuscle, getLocale } from "../lib/i18n";
 
 /**
  * Screen 3: Builder / WORKOUT_BUILDER
@@ -32,13 +33,22 @@ interface WeeklyRoutines {
     [key: string]: Exercise[] | undefined;
 }
 
-const DAYS: { key: DayOfWeek; label: string }[] = [
+const DAYS_EN: { key: DayOfWeek; label: string }[] = [
     { key: 'sun', label: 'S' },
     { key: 'mon', label: 'M' },
     { key: 'tue', label: 'T' },
     { key: 'wed', label: 'W' },
     { key: 'thu', label: 'T' },
     { key: 'fri', label: 'F' },
+    { key: 'sat', label: 'S' },
+];
+const DAYS_ES: { key: DayOfWeek; label: string }[] = [
+    { key: 'sun', label: 'D' },
+    { key: 'mon', label: 'L' },
+    { key: 'tue', label: 'M' },
+    { key: 'wed', label: 'X' },
+    { key: 'thu', label: 'J' },
+    { key: 'fri', label: 'V' },
     { key: 'sat', label: 'S' },
 ];
 
@@ -64,7 +74,7 @@ export default function BuilderScreen() {
     // Get today's day key
     const getTodayKey = (): DayOfWeek => {
         const dayIndex = new Date().getDay();
-        return DAYS[dayIndex].key;
+        return DAYS_EN[dayIndex].key;
     };
 
     // Load weekly routines from localStorage
@@ -252,7 +262,7 @@ export default function BuilderScreen() {
                             letterSpacing: -1,
                         }}
                     >
-                        BUILD
+                        {t('BUILDER')}
                     </span>
                 </motion.div>
 
@@ -272,10 +282,10 @@ export default function BuilderScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        MY_ROUTINES
+                        {t('MY_ROUTINES')}
                     </span>
                     <div className="flex justify-between" style={{ gap: 8 }}>
-                        {DAYS.map((day) => {
+                        {(getLocale() === 'es' ? DAYS_ES : DAYS_EN).map((day) => {
                             const hasRoutine = weeklyRoutines[day.key] && weeklyRoutines[day.key]!.length > 0;
                             const isToday = getTodayKey() === day.key;
 
@@ -375,7 +385,7 @@ export default function BuilderScreen() {
                                     }}
                                 >
                                     {preloadedFrom === "archive"
-                                        ? "LOADED_FROM_ARCHIVE"
+                                        ? t('LOADED_ARCHIVE')
                                         : `LOADED_${preloadedFrom.replace("routine_", "").toUpperCase()}_ROUTINE`}
                                 </span>
                             </div>
@@ -454,7 +464,7 @@ export default function BuilderScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        + ADD_EXERCISE
+                        + {t('ADD_EXERCISES')}
                     </span>
                 </motion.div>
 
@@ -485,7 +495,7 @@ export default function BuilderScreen() {
                                     letterSpacing: 2,
                                 }}
                             >
-                                QUEUE
+                                {t('QUEUE')}
                             </span>
                             {/* Superset Toggle */}
                             <motion.button
@@ -512,7 +522,7 @@ export default function BuilderScreen() {
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    SUPERSET
+                                    {t('SUPERSET')}
                                 </span>
                                 <div
                                     style={{
@@ -541,7 +551,7 @@ export default function BuilderScreen() {
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    💾 SAVE
+                                    💾 {t('SAVE')}
                                 </motion.button>
                                 <motion.button
                                     initial={{ opacity: 0 }}
@@ -558,7 +568,7 @@ export default function BuilderScreen() {
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    CLEAR_ALL
+                                    {t('CLEAR_ALL')}
                                 </motion.button>
                             </div>
                         )}
@@ -598,7 +608,7 @@ export default function BuilderScreen() {
                                     letterSpacing: 1,
                                 }}
                             >
-                                NO EXERCISES SELECTED
+                                {t('NO_EXERCISES')}
                             </span>
                             <span
                                 style={{
@@ -609,7 +619,7 @@ export default function BuilderScreen() {
                                     marginTop: 8,
                                 }}
                             >
-                                Tap + ADD_EXERCISE to build your session
+                                {t('TAP_ADD')}
                             </span>
                         </motion.div>
                     )}
@@ -716,7 +726,7 @@ export default function BuilderScreen() {
                                                         letterSpacing: 0.5,
                                                     }}
                                                 >
-                                                    {exercise.name}
+                                                    {translateExercise(exercise.name)}
                                                 </span>
                                                 <div className="flex items-center" style={{ gap: 8 }}>
                                                     <span
@@ -730,7 +740,7 @@ export default function BuilderScreen() {
                                                             fontWeight: 600,
                                                         }}
                                                     >
-                                                        {exercise.muscle}
+                                                        {translateMuscle(exercise.muscle)}
                                                     </span>
                                                     <span
                                                         style={{
@@ -852,7 +862,7 @@ export default function BuilderScreen() {
                                     letterSpacing: 2,
                                 }}
                             >
-                                START_SESSION <span style={{ display: 'inline-block', transform: 'translateY(-1px)', marginLeft: 4 }}>→</span>
+                                {t('START_SESSION')} <span style={{ display: 'inline-block', transform: 'translateY(-1px)', marginLeft: 4 }}>→</span>
                             </span>
                         </motion.div>
                     ) : (
@@ -874,7 +884,7 @@ export default function BuilderScreen() {
                                     letterSpacing: 1,
                                 }}
                             >
-                                SELECT EXERCISES TO START
+                                {t('TAP_ADD')}
                             </span>
                         </motion.div>
                     )}
@@ -929,7 +939,7 @@ export default function BuilderScreen() {
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    SAVE_TO_DAY
+                                    {t('SAVE_TO_DAY')}
                                 </span>
                                 <span
                                     style={{
@@ -939,10 +949,10 @@ export default function BuilderScreen() {
                                         textAlign: "center",
                                     }}
                                 >
-                                    Select a day to save {selectedExercises.length} exercise{selectedExercises.length !== 1 ? "s" : ""} as a routine
+                                    {t('PICK_DAY')}
                                 </span>
                                 <div className="flex justify-between w-full" style={{ gap: 8 }}>
-                                    {DAYS.map((day) => {
+                                    {(getLocale() === 'es' ? DAYS_ES : DAYS_EN).map((day) => {
                                         const hasRoutine = weeklyRoutines[day.key] && weeklyRoutines[day.key]!.length > 0;
 
                                         return (
@@ -995,7 +1005,7 @@ export default function BuilderScreen() {
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    CANCEL
+                                    {t('CANCEL')}
                                 </motion.button>
                             </motion.div>
                         </motion.div>

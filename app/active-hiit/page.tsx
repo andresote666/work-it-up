@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import DevNavigation from "../components/DevNavigation";
+import { t, getLocale } from "../lib/i18n";
 
 /**
  * HIIT Session Active Screen
@@ -85,7 +86,7 @@ export default function ActiveHIITScreen() {
                 utterance.rate = 1.2;
                 utterance.pitch = 1.1;
                 utterance.volume = 1;
-                utterance.lang = 'en-US';
+                utterance.lang = getLocale() === 'es' ? 'es-ES' : 'en-US';
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(utterance);
             }
@@ -194,12 +195,12 @@ export default function ActiveHIITScreen() {
             // Voice announcement for phase transition
             if (phase === "WORK") {
                 if (currentRound >= rounds) {
-                    speakVoice("Done!");
+                    speakVoice(t('VOICE_DONE'));
                 } else {
-                    speakVoice("Rest!");
+                    speakVoice(t('VOICE_REST'));
                 }
             } else {
-                speakVoice("Go!");
+                speakVoice(t('VOICE_GO'));
             }
         }
 
@@ -288,8 +289,8 @@ export default function ActiveHIITScreen() {
     };
 
     // Motivational phrases
-    const workPhrases = ["PUSH IT", "NO LIMITS", "STAY HARD", "FULL SEND", "BURN IT", "GO HARDER", "ALL OUT", "BEAST MODE", "MAX EFFORT", "DON'T QUIT"];
-    const restPhrases = ["BREATHE", "RECOVER", "RELOAD", "RESET", "COOL DOWN", "STAY READY", "RECHARGE", "FOCUS UP", "STAY CALM", "PREPARE"];
+    const workPhrases = Array.from({ length: 10 }, (_, i) => t(`MOTIV_WORK_${i + 1}`));
+    const restPhrases = Array.from({ length: 10 }, (_, i) => t(`MOTIV_REST_${i + 1}`));
     const currentMotivation = phase === "WORK"
         ? workPhrases[(currentRound - 1) % workPhrases.length]
         : restPhrases[(currentRound - 1) % restPhrases.length];
@@ -421,7 +422,7 @@ export default function ActiveHIITScreen() {
                                         lineHeight: 1.1,
                                     }}
                                 >
-                                    HIIT
+                                    {t('HIIT_TITLE')}
                                 </span>
                                 <span
                                     style={{
@@ -432,14 +433,14 @@ export default function ActiveHIITScreen() {
                                         marginTop: 4,
                                     }}
                                 >
-                                    // CONFIGURE_SESSION
+                                    {t('CONFIGURE_SESSION')}
                                 </span>
                             </div>
 
                             {/* Config Cards */}
                             <div className="flex flex-col" style={{ gap: 10, marginTop: 28 }}>
                                 <Stepper
-                                    label="ROUNDS"
+                                    label={t('ROUNDS')}
                                     value={rounds}
                                     onChange={setRounds}
                                     min={1}
@@ -448,7 +449,7 @@ export default function ActiveHIITScreen() {
                                     unit="RDS"
                                 />
                                 <Stepper
-                                    label="WORK_TIME"
+                                    label={t('WORK_TIME')}
                                     value={workTime}
                                     onChange={setWorkTime}
                                     min={5}
@@ -457,7 +458,7 @@ export default function ActiveHIITScreen() {
                                     unit="SEC"
                                 />
                                 <Stepper
-                                    label="REST_TIME"
+                                    label={t('REST_TIME')}
                                     value={restTime}
                                     onChange={setRestTime}
                                     min={5}
@@ -486,7 +487,7 @@ export default function ActiveHIITScreen() {
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    TOTAL_ESTIMATE
+                                    {t('TOTAL_ESTIMATE')}
                                 </span>
                                 <span
                                     style={{
@@ -508,9 +509,9 @@ export default function ActiveHIITScreen() {
                                 }}
                             >
                                 {[
-                                    { label: "WORK", value: `${workTime}s`, color: CYAN },
-                                    { label: "REST", value: `${restTime}s`, color: ORANGE },
-                                    { label: "RATIO", value: `${(workTime / restTime).toFixed(1)}:1`, color: "#FFFFFF" },
+                                    { label: t('WORK'), value: `${workTime}s`, color: CYAN },
+                                    { label: t('REST'), value: `${restTime}s`, color: ORANGE },
+                                    { label: t('RATIO'), value: `${(workTime / restTime).toFixed(1)}:1`, color: "#FFFFFF" },
                                 ].map((item) => (
                                     <div key={item.label} className="flex flex-col items-center" style={{ gap: 4 }}>
                                         <span
@@ -560,7 +561,7 @@ export default function ActiveHIITScreen() {
                                         letterSpacing: 2,
                                     }}
                                 >
-                                    START HIIT ⚡
+                                    {t('START_HIIT')}
                                 </span>
                             </motion.button>
                         </motion.div>
@@ -588,7 +589,7 @@ export default function ActiveHIITScreen() {
                                     textShadow: `0 0 40px ${CYAN}40`,
                                 }}
                             >
-                                {countdownValue > 0 ? countdownValue : "GO!"}
+                                {countdownValue > 0 ? countdownValue : t('VOICE_GO')}
                             </motion.span>
                             <span
                                 style={{
@@ -599,7 +600,7 @@ export default function ActiveHIITScreen() {
                                     marginTop: 16,
                                 }}
                             >
-                                GET READY
+                                {t('GET_READY')}
                             </span>
                         </motion.div>
                     )}
@@ -639,7 +640,7 @@ export default function ActiveHIITScreen() {
                                         letterSpacing: 2,
                                     }}
                                 >
-                                    {phase}
+                                    {phase === "WORK" ? t('WORK') : t('REST')}
                                 </span>
                             </motion.div>
 
@@ -653,7 +654,7 @@ export default function ActiveHIITScreen() {
                                     marginTop: 10,
                                 }}
                             >
-                                ROUND {currentRound}/{rounds}
+                                {t('ROUND')} {currentRound}/{rounds}
                             </span>
 
                             {/* Circular Timer — BIGGER */}
@@ -725,7 +726,7 @@ export default function ActiveHIITScreen() {
                                             marginTop: 4,
                                         }}
                                     >
-                                        SECONDS
+                                        {t('SECONDS')}
                                     </span>
                                 </div>
                             </div>
@@ -769,7 +770,7 @@ export default function ActiveHIITScreen() {
                                         marginBottom: 8,
                                     }}
                                 >
-                                    SESSION_TIMELINE
+                                    {t('SESSION_TIMELINE')}
                                 </span>
                                 <div
                                     className="flex"
@@ -891,7 +892,7 @@ export default function ActiveHIITScreen() {
                                         color: "#555555",
                                         letterSpacing: 1,
                                     }}>
-                                        ELAPSED {formatTime(totalElapsed)}
+                                        {t('ELAPSED')} {formatTime(totalElapsed)}
                                     </span>
                                     <span style={{
                                         fontFamily: "'Chakra Petch', sans-serif",
@@ -934,7 +935,7 @@ export default function ActiveHIITScreen() {
                                             letterSpacing: 1,
                                         }}
                                     >
-                                        WORK
+                                        {t('WORK')}
                                     </span>
                                 </div>
                                 <div
@@ -965,7 +966,7 @@ export default function ActiveHIITScreen() {
                                             letterSpacing: 1,
                                         }}
                                     >
-                                        REST
+                                        {t('REST')}
                                     </span>
                                 </div>
                                 <div
@@ -990,7 +991,7 @@ export default function ActiveHIITScreen() {
                                         }}
                                     >
                                         {phase === "WORK"
-                                            ? (currentRound >= rounds ? "✓ DONE" : `⏸ REST`)
+                                            ? (currentRound >= rounds ? t('DONE_CHECK') : `⏸ ${t('REST')}`)
                                             : `🏃 R${currentRound + 1}`}
                                     </span>
                                     <span
@@ -1001,7 +1002,7 @@ export default function ActiveHIITScreen() {
                                             letterSpacing: 1,
                                         }}
                                     >
-                                        NEXT
+                                        {t('NEXT_LABEL')}
                                     </span>
                                 </div>
                             </div>
@@ -1052,7 +1053,7 @@ export default function ActiveHIITScreen() {
                                             letterSpacing: 1,
                                         }}
                                     >
-                                        {isPaused ? "▶ RESUME" : "⏸ PAUSE"}
+                                        {isPaused ? t('RESUME') : t('PAUSE')}
                                     </span>
                                 </motion.button>
 
@@ -1077,7 +1078,7 @@ export default function ActiveHIITScreen() {
                                             letterSpacing: 1,
                                         }}
                                     >
-                                        SKIP ⏭
+                                        {t('SKIP_HIIT')}
                                     </span>
                                 </motion.button>
                             </div>
@@ -1114,15 +1115,15 @@ export default function ActiveHIITScreen() {
                                     lineHeight: 1.2,
                                 }}
                             >
-                                HIIT<br />COMPLETE
+                                {t('HIIT_TITLE')}<br />{t('SESSION_COMPLETE')}
                             </span>
 
                             {/* Stats Cards */}
                             <div className="flex flex-col" style={{ gap: 8, width: "100%" }}>
                                 {[
-                                    { label: "ROUNDS", value: `${currentRound}/${rounds}`, color: CYAN },
-                                    { label: "DURATION", value: formatTime(totalElapsed), color: CYAN },
-                                    { label: "WORK/REST", value: `${workTime}s / ${restTime}s`, color: ORANGE },
+                                    { label: t('ROUNDS'), value: `${currentRound}/${rounds}`, color: CYAN },
+                                    { label: t('DURATION'), value: formatTime(totalElapsed), color: CYAN },
+                                    { label: `${t('WORK')}/${t('REST')}`, value: `${workTime}s / ${restTime}s`, color: ORANGE },
                                 ].map((stat) => (
                                     <div
                                         key={stat.label}
@@ -1180,7 +1181,7 @@ export default function ActiveHIITScreen() {
                                         letterSpacing: 2,
                                     }}
                                 >
-                                    SAVE & VIEW LAB →
+                                    {t('SAVE_VIEW_LAB')}
                                 </span>
                             </motion.button>
                         </motion.div>

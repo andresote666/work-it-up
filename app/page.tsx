@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { t, getLocale, setLocale } from "./lib/i18n";
 
 /**
  * Screen 1: Splash / WORKOUT_HOME
@@ -12,10 +13,11 @@ import { motion } from "framer-motion";
  */
 export default function SplashScreen() {
   // Dynamic quote rotation
-  const [quote, setQuote] = useState({ text: "Show up, Log it.", sub: "Build momentum." });
+  const [quote, setQuote] = useState({ text: "", sub: "" });
   const [logoError, setLogoError] = useState(false);
+  const [currentLocale, setCurrentLocale] = useState("en");
 
-  const quotes = [
+  const quotesEn = [
     { text: "Show up, Log it.", sub: "Build momentum." },
     { text: "One rep at a time.", sub: "Consistency wins." },
     { text: "Sweat now.", sub: "Shine later." },
@@ -25,10 +27,28 @@ export default function SplashScreen() {
     { text: "Be unstoppable.", sub: "Start now." },
   ];
 
+  const quotesEs = [
+    { text: "Aparece, Regístralo.", sub: "Crea impulso." },
+    { text: "Una rep a la vez.", sub: "La constancia gana." },
+    { text: "Suda ahora.", sub: "Brilla después." },
+    { text: "Sin atajos.", sub: "Solo trabajo duro." },
+    { text: "Rompe tus límites.", sub: "Expande tu mundo." },
+    { text: "El dolor de hoy.", sub: "La fuerza de mañana." },
+    { text: "Sé imparable.", sub: "Empieza ya." },
+  ];
+
   useEffect(() => {
-    // Random quote on load
+    const locale = getLocale();
+    setCurrentLocale(locale);
+    const quotes = locale === 'es' ? quotesEs : quotesEn;
     setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   }, []);
+
+  const toggleLocale = () => {
+    const newLocale = currentLocale === 'en' ? 'es' : 'en';
+    setLocale(newLocale);
+    window.location.reload();
+  };
 
   return (
     <main className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
@@ -61,17 +81,65 @@ export default function SplashScreen() {
               style={{ width: 8, height: 8, backgroundColor: "#CCFF00" }}
             />
           </div>
-          {/* SYSTEM_READY text */}
-          <span
-            style={{
-              fontFamily: "'Chakra Petch', sans-serif",
-              fontSize: 10,
-              color: "#555555",
-              letterSpacing: 1,
-            }}
-          >
-            SYSTEM_READY
-          </span>
+          {/* Right side: Status + Language Toggle */}
+          <div className="flex items-center" style={{ gap: 12 }}>
+            <span
+              style={{
+                fontFamily: "'Chakra Petch', sans-serif",
+                fontSize: 10,
+                color: "#555555",
+                letterSpacing: 1,
+              }}
+            >
+              {t('SYSTEM_READY')}
+            </span>
+            {/* Language Toggle */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleLocale}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0,
+                padding: 0,
+                backgroundColor: "transparent",
+                border: "1px solid #333333",
+                borderRadius: 2,
+                cursor: "pointer",
+                overflow: "hidden",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'Chakra Petch', sans-serif",
+                  fontSize: 9,
+                  fontWeight: currentLocale === 'en' ? 700 : 400,
+                  color: currentLocale === 'en' ? "#000000" : "#555555",
+                  backgroundColor: currentLocale === 'en' ? "#CCFF00" : "transparent",
+                  padding: "3px 6px",
+                  letterSpacing: 0.5,
+                  transition: "all 0.15s ease",
+                }}
+              >
+                EN
+              </span>
+              <span
+                style={{
+                  fontFamily: "'Chakra Petch', sans-serif",
+                  fontSize: 9,
+                  fontWeight: currentLocale === 'es' ? 700 : 400,
+                  color: currentLocale === 'es' ? "#000000" : "#555555",
+                  backgroundColor: currentLocale === 'es' ? "#CCFF00" : "transparent",
+                  padding: "3px 6px",
+                  letterSpacing: 0.5,
+                  transition: "all 0.15s ease",
+                }}
+              >
+                ES
+              </span>
+            </motion.button>
+          </div>
         </motion.div>
 
         {/* Center Content - grows to fill available space */}
@@ -254,7 +322,7 @@ export default function SplashScreen() {
                 letterSpacing: 2,
               }}
             >
-              ENTER
+              {t('ENTER')}
             </span>
             <div
               style={{

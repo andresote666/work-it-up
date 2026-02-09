@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DevNavigation from "../components/DevNavigation";
+import { t, translateExercise, translateMuscle, getLocale, DAYS_EN, DAYS_ES } from "../lib/i18n";
 
 /**
  * Screen 2: Archive / WORKOUT_SCREEN2
@@ -100,7 +101,7 @@ interface WeeklyRoutines {
     [key: string]: { id: number; name: string; muscle: string; equipment: string }[] | undefined;
 }
 
-const DAYS: { key: DayOfWeek; label: string }[] = [
+const DAYS_FALLBACK: { key: DayOfWeek; label: string }[] = [
     { key: 'sun', label: 'S' },
     { key: 'mon', label: 'M' },
     { key: 'tue', label: 'T' },
@@ -284,7 +285,7 @@ export default function ArchiveScreen() {
                                 color: "#FFFFFF",
                             }}
                         >
-                            ARCHIVE
+                            {t('ARCHIVE')}
                         </span>
                         {/* Clear Archive Button - only show if there's history */}
                         {workoutHistory.length > 0 && (
@@ -309,7 +310,7 @@ export default function ArchiveScreen() {
                                 }}
                             >
                                 <span style={{ fontSize: 12 }}>🗑</span>
-                                CLEAR
+                                {t('CLEAR')}
                             </motion.button>
                         )}
                     </div>
@@ -321,7 +322,7 @@ export default function ArchiveScreen() {
                             letterSpacing: 1,
                         }}
                     >
-            // HISTORY_LOG
+                        {t('ARCHIVE_SUBTITLE')}
                     </span>
                 </div>
 
@@ -341,7 +342,7 @@ export default function ArchiveScreen() {
                             letterSpacing: 1,
                         }}
                     >
-                        CONSISTENCY(30D)
+                        {t('CONSISTENCY')}
                     </span>
                     <div className="flex items-center" style={{ gap: 16 }}>
                         {/* Circular Progress Ring */}
@@ -412,7 +413,7 @@ export default function ArchiveScreen() {
                                     color: "#888888",
                                 }}
                             >
-                                SESSIONS_COMPLETE
+                                {t('SESSIONS_COMPLETE')}
                             </motion.span>
                         </div>
                         {/* Status Badge */}
@@ -445,7 +446,7 @@ export default function ArchiveScreen() {
                                     letterSpacing: 1,
                                 }}
                             >
-                                {consistencyStatus}
+                                {t(consistencyStatus === 'ON_TRACK' ? 'ON_TRACK' : consistencyStatus === 'BUILDING' ? 'BUILDING' : 'START_STRONG')}
                             </motion.span>
                         </motion.div>
                     </div>
@@ -484,7 +485,7 @@ export default function ArchiveScreen() {
                                         letterSpacing: 1,
                                     }}
                                 >
-                                    {category}
+                                    {category === 'ALL' ? t('ALL') : translateMuscle(category)}
                                 </span>
                             </motion.button>
                         );
@@ -531,8 +532,8 @@ export default function ArchiveScreen() {
                                 }}
                             >
                                 {activeFilter === "ALL"
-                                    ? "NO_SESSIONS_YET"
-                                    : `NO_${activeFilter}_SESSIONS`}
+                                    ? t('NO_SESSIONS')
+                                    : `${translateMuscle(activeFilter)}: ${t('NO_SESSIONS')}`}
                             </span>
                             <Link href="/builder">
                                 <motion.span
@@ -545,7 +546,7 @@ export default function ArchiveScreen() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    &gt; START_FIRST_WORKOUT
+                                    &gt; {t('START_FIRST')}
                                 </motion.span>
                             </Link>
                         </motion.div>
@@ -606,7 +607,7 @@ export default function ArchiveScreen() {
                                             color: "#FFFFFF",
                                         }}
                                     >
-                                        {formatDate(log.date)} // {getPrimaryMuscle(log.muscles)}_SESSION
+                                        {formatDate(log.date)} // {translateMuscle(getPrimaryMuscle(log.muscles))}
                                     </span>
                                     <span
                                         style={{
@@ -667,7 +668,7 @@ export default function ArchiveScreen() {
                                                         color: "#888888",
                                                     }}
                                                 >
-                                                    {ex.name}
+                                                    {translateExercise(ex.name)}
                                                 </span>
                                                 <div className="flex items-center" style={{ gap: 12 }}>
                                                     <span
@@ -736,7 +737,7 @@ export default function ArchiveScreen() {
                                                         fontWeight: 600,
                                                     }}
                                                 >
-                                                    REDO
+                                                    {t('REDO')}
                                                 </span>
                                             </motion.button>
 
@@ -777,7 +778,7 @@ export default function ArchiveScreen() {
                                                         letterSpacing: 1,
                                                     }}
                                                 >
-                                                    {deleteConfirmId === log.id ? "CONFIRM?" : "DELETE"}
+                                                    {deleteConfirmId === log.id ? t('CONFIRM') : t('DELETE')}
                                                 </span>
                                             </motion.button>
 
@@ -853,7 +854,7 @@ export default function ArchiveScreen() {
                                             color: "#FF6B6B",
                                         }}
                                     >
-                                        CLEAR_ALL
+                                        {t('CLEAR_ALL')}
                                     </span>
                                 </div>
 
@@ -867,8 +868,8 @@ export default function ArchiveScreen() {
                                         marginBottom: 24,
                                     }}
                                 >
-                                    This will permanently delete <span style={{ color: "#FF6B6B", fontWeight: 600 }}>{workoutHistory.length}</span> workout{workoutHistory.length !== 1 ? "s" : ""} from your archive.
-                                    Your streak and progress history will be reset.
+                                    {t('CLEAR_WARNING_LINE1')} <span style={{ color: "#FF6B6B", fontWeight: 600 }}>{workoutHistory.length}</span> {t('CLEAR_WARNING_LINE2')}
+                                    {t('CLEAR_STREAK_WARNING')}
                                 </p>
 
                                 {/* Session Count Preview */}
@@ -889,7 +890,7 @@ export default function ArchiveScreen() {
                                             letterSpacing: 1,
                                         }}
                                     >
-                                        SESSIONS_TO_DELETE:
+                                        {t('SESSIONS_TO_DELETE')}
                                     </span>
                                     <span
                                         style={{
@@ -922,7 +923,7 @@ export default function ArchiveScreen() {
                                             cursor: "pointer",
                                         }}
                                     >
-                                        CANCEL
+                                        {t('CANCEL')}
                                     </motion.button>
                                     <motion.button
                                         onClick={handleClearArchive}
@@ -944,7 +945,7 @@ export default function ArchiveScreen() {
                                             cursor: "pointer",
                                         }}
                                     >
-                                        CLEAR_ALL
+                                        {t('CLEAR_ALL')}
                                     </motion.button>
                                 </div>
                             </motion.div>
@@ -994,12 +995,12 @@ export default function ArchiveScreen() {
                                         letterSpacing: 2,
                                     }}
                                 >
-                                    SAVE_TO_DAY
+                                    {t('SAVE_TO_DAY')}
                                 </span>
 
                                 {/* Day Buttons */}
                                 <div className="flex justify-between w-full" style={{ gap: 8 }}>
-                                    {DAYS.map((day) => {
+                                    {(getLocale() === 'es' ? DAYS_ES : DAYS_EN).map((day) => {
                                         const hasRoutine = weeklyRoutines[day.key] && weeklyRoutines[day.key]!.length > 0;
                                         return (
                                             <motion.button
@@ -1056,7 +1057,7 @@ export default function ArchiveScreen() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    CANCEL
+                                    {t('CANCEL')}
                                 </motion.button>
                             </motion.div>
                         </motion.div>
